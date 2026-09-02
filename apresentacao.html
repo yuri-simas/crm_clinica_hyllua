@@ -1,0 +1,814 @@
+<title>CRM Clínica Hyllua Husein</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#FAF6F6;
+  --surface:#FFFFFF;
+  --surface-2:#F3EAEA;
+  --ink:#43242A;
+  --ink-2:#6E4C50;
+  --ink-3:#957577;
+  --line:#E7D6D6;
+  --line-2:#D8C2C3;
+  --accent:#A8474D;
+  --accent-soft:#F6E6E6;
+  --flag:#8A6A22;
+  --flag-soft:#F7EFDC;
+  --flag-line:#E2D0A6;
+  --good:#3F6B52;
+  --good-soft:#E6F0E9;
+  --good-line:#BDD8C7;
+  --shadow:0 1px 2px rgba(67,36,42,.05), 0 8px 24px -12px rgba(67,36,42,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#1B1214;
+    --surface:#241A1D;
+    --surface-2:#2E2225;
+    --ink:#F2E6E5;
+    --ink-2:#C9AFB0;
+    --ink-3:#9C8283;
+    --line:#3A2B2E;
+    --line-2:#4B383B;
+    --accent:#E3939A;
+    --accent-soft:#3A2427;
+    --flag:#D9BC72;
+    --flag-soft:#332A18;
+    --flag-line:#544629;
+    --good:#8FBFA3;
+    --good-soft:#22302A;
+    --good-line:#3B5347;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#1B1214;
+  --surface:#241A1D;
+  --surface-2:#2E2225;
+  --ink:#F2E6E5;
+  --ink-2:#C9AFB0;
+  --ink-3:#9C8283;
+  --line:#3A2B2E;
+  --line-2:#4B383B;
+  --accent:#E3939A;
+  --accent-soft:#3A2427;
+  --flag:#D9BC72;
+  --flag-soft:#332A18;
+  --flag-line:#544629;
+  --good:#8FBFA3;
+  --good-soft:#22302A;
+  --good-line:#3B5347;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:Karla, "Segoe UI", system-ui, sans-serif;
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+
+.wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 24px 96px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0;
+}
+@media (min-width:1040px){
+  .wrap{grid-template-columns:210px minmax(0,1fr); gap:56px; align-items:start}
+  .hero{grid-column:1 / -1}
+}
+
+/* ---------- hero ---------- */
+.hero{
+  padding:64px 0 40px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:48px;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin:0 0 20px;
+}
+h1{
+  font-family:Fraunces, Georgia, serif;
+  font-weight:600;
+  font-size:clamp(38px, 6.2vw, 64px);
+  line-height:1.04;
+  letter-spacing:-.02em;
+  margin:0 0 20px;
+  text-wrap:balance;
+  max-width:16ch;
+}
+.deck{
+  font-size:clamp(18px,2.2vw,21px);
+  line-height:1.5;
+  color:var(--ink-2);
+  max-width:58ch;
+  margin:0 0 36px;
+}
+.meta{
+  display:flex;
+  flex-wrap:wrap;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--surface);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.meta div{
+  flex:1 1 190px;
+  padding:16px 20px;
+  border-right:1px solid var(--line);
+}
+.meta div:last-child{border-right:none}
+.meta dt{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  margin:0 0 6px;
+}
+.meta dd{margin:0; font-weight:500; font-size:15px; line-height:1.4}
+.meta .ok{color:var(--good); font-weight:700}
+.meta .flagcount{color:var(--flag); font-weight:700}
+
+/* ---------- toc ---------- */
+.toc{
+  display:none;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:12.5px;
+  line-height:1.5;
+}
+@media (min-width:1040px){
+  .toc{display:block; position:sticky; top:32px}
+}
+.toc p{
+  font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-3); margin:0 0 14px;
+}
+.toc ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px}
+.toc a{
+  color:var(--ink-2); text-decoration:none;
+  display:grid; grid-template-columns:22px 1fr; gap:6px;
+}
+.toc a span{color:var(--ink-3)}
+.toc a:hover, .toc a:hover span{color:var(--accent)}
+
+/* ---------- sections ---------- */
+main{min-width:0}
+section{margin:0 0 64px; scroll-margin-top:24px}
+h2{
+  font-family:Fraunces, Georgia, serif;
+  font-weight:600;
+  font-size:clamp(26px,3.4vw,34px);
+  line-height:1.15;
+  letter-spacing:-.015em;
+  margin:0 0 8px;
+  text-wrap:balance;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:14px;
+  align-items:baseline;
+}
+h2 .num{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:13px;
+  font-weight:500;
+  color:var(--accent);
+  letter-spacing:0;
+}
+h3{
+  font-family:Karla, sans-serif;
+  font-weight:700;
+  font-size:17px;
+  letter-spacing:.01em;
+  margin:36px 0 10px;
+}
+p{margin:0 0 16px; max-width:68ch}
+.lede{color:var(--ink-2); max-width:68ch; margin-bottom:26px}
+ul,ol{max-width:68ch; padding-left:22px; margin:0 0 18px}
+li{margin-bottom:9px}
+li::marker{color:var(--ink-3)}
+em{font-style:italic; color:var(--ink-2)}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto; margin:0 0 22px; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:15.5px}
+th,td{text-align:left; padding:13px 18px; border-bottom:1px solid var(--line); vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+th{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:500; background:var(--surface-2);
+  white-space:nowrap;
+}
+td.formula{font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:13.5px; color:var(--ink-2)}
+.split th:first-child{color:var(--accent)}
+.split th:last-child{color:var(--ink-3)}
+.tag{
+  display:inline-block;
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; font-weight:600;
+  border-radius:99px; padding:2px 9px; white-space:nowrap;
+}
+.tag.hof{background:var(--accent-soft); color:var(--accent)}
+.tag.odo{background:var(--good-soft); color:var(--good)}
+
+/* ---------- decisions ---------- */
+.decisions{
+  border:1px solid var(--good-line);
+  border-radius:14px;
+  overflow:hidden;
+  background:var(--surface);
+  box-shadow:var(--shadow);
+}
+.decisions > p{
+  margin:0; padding:16px 20px; background:var(--good-soft);
+  border-bottom:1px solid var(--good-line);
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--good); font-weight:600;
+  max-width:none;
+}
+.decisions dl{margin:0; padding:0}
+.decisions .row{
+  display:grid; gap:4px 20px; padding:16px 20px;
+  border-bottom:1px solid var(--line);
+}
+@media (min-width:640px){ .decisions .row{grid-template-columns:230px 1fr} }
+.decisions .row:last-child{border-bottom:none}
+.decisions dt{
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3);
+  padding-top:3px;
+}
+.decisions dd{margin:0; font-size:15.5px; line-height:1.5}
+.decisions dd b{color:var(--good)}
+
+/* ---------- funnel ---------- */
+.funnels{display:flex; flex-direction:column; gap:22px; margin:26px 0 8px}
+.funnel{
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+  padding:22px;
+  box-shadow:var(--shadow);
+}
+.funnel header{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:baseline; margin-bottom:18px}
+.funnel h4{
+  margin:0; font-family:Fraunces, Georgia, serif; font-weight:600;
+  font-size:19px; letter-spacing:-.01em;
+}
+.funnel .owner{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3);
+}
+.flow{display:flex; flex-wrap:wrap; align-items:center; gap:10px}
+.step{
+  border:1px solid var(--line-2);
+  background:var(--surface-2);
+  border-radius:8px;
+  padding:9px 14px;
+  font-size:14.5px; font-weight:500; line-height:1.3;
+}
+.step.start{border-color:var(--accent); background:var(--accent-soft); color:var(--accent)}
+.step.end{border-color:var(--good); background:var(--good-soft); color:var(--good)}
+.arrow{color:var(--ink-3); font-family:"IBM Plex Mono", monospace; font-size:14px}
+.branch{
+  margin-top:14px; padding-left:16px;
+  border-left:2px solid var(--line-2);
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  font-size:13.5px; color:var(--ink-3);
+}
+.branch b{
+  font-family:"IBM Plex Mono", monospace; font-size:11px;
+  letter-spacing:.08em; text-transform:uppercase; font-weight:500;
+}
+.chip{border:1px dashed var(--line-2); border-radius:99px; padding:3px 11px; font-size:13px; color:var(--ink-2)}
+
+/* ---------- metric cards ---------- */
+.metrics{display:grid; gap:14px; margin:22px 0; grid-template-columns:1fr}
+@media (min-width:620px){.metrics{grid-template-columns:1fr 1fr}}
+.metric{
+  border:1px solid var(--line);
+  border-top:3px solid var(--accent);
+  border-radius:12px;
+  background:var(--surface);
+  padding:20px;
+  box-shadow:var(--shadow);
+}
+.metric h4{margin:0 0 10px; font-size:16.5px; font-weight:700; font-family:Karla, sans-serif}
+.metric .calc{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:13.5px; color:var(--ink-2);
+  background:var(--surface-2); border-radius:6px;
+  padding:9px 12px; margin:0; line-height:1.5;
+}
+
+/* ---------- callouts ---------- */
+.flagbox{
+  border:1px solid var(--flag-line);
+  border-left:3px solid var(--flag);
+  background:var(--flag-soft);
+  border-radius:0 10px 10px 0;
+  padding:15px 18px; margin:0 0 22px; max-width:68ch;
+}
+.flagbox p{margin:0; font-size:15.5px; line-height:1.55}
+.flagbox p + p{margin-top:9px}
+.flaglabel{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--flag); font-weight:600; display:block; margin-bottom:5px;
+}
+.callout{
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent);
+  background:var(--surface);
+  border-radius:0 10px 10px 0;
+  padding:18px 20px; margin:0 0 22px; max-width:68ch;
+  box-shadow:var(--shadow);
+}
+.callout p:last-child{margin-bottom:0}
+
+/* ---------- gaps list ---------- */
+.gaps{list-style:none; padding:0; margin:22px 0; max-width:68ch}
+.gaps li{
+  display:grid; grid-template-columns:30px 1fr; gap:14px;
+  padding:18px 0; border-bottom:1px solid var(--line); margin:0;
+}
+.gaps li:last-child{border-bottom:none}
+.gaps .g{
+  font-family:"IBM Plex Mono", monospace; font-size:12px; font-weight:600;
+  color:var(--flag); padding-top:4px; font-variant-numeric:tabular-nums;
+}
+.gaps h4{margin:0 0 5px; font-size:16px; font-weight:700; font-family:Karla, sans-serif}
+.gaps p{margin:0; font-size:15.5px; color:var(--ink-2)}
+.gaps .fix{
+  display:block; margin-top:7px; font-size:14.5px; color:var(--good);
+}
+.gaps .fix b{
+  font-family:"IBM Plex Mono", monospace; font-size:10.5px;
+  letter-spacing:.1em; text-transform:uppercase; margin-right:7px;
+}
+
+/* ---------- phases ---------- */
+.phases{list-style:none; padding:0; margin:22px 0; max-width:68ch}
+.phases li{
+  display:grid; grid-template-columns:56px 1fr; gap:18px;
+  padding:20px 0; border-bottom:1px solid var(--line); margin:0;
+}
+.phases li:last-child{border-bottom:none}
+.phases .ph{
+  font-family:"IBM Plex Mono", monospace; font-size:12px; font-weight:600;
+  letter-spacing:.06em; color:var(--accent); padding-top:3px;
+}
+.phases h4{margin:0 0 5px; font-size:16.5px; font-weight:700; font-family:Karla, sans-serif}
+.phases p{margin:0; color:var(--ink-2); font-size:15.5px}
+
+/* ---------- pendency list ---------- */
+.pend{border:1px solid var(--flag-line); border-radius:14px; background:var(--surface); overflow:hidden}
+.pend > p{
+  margin:0; padding:16px 20px; background:var(--flag-soft);
+  border-bottom:1px solid var(--flag-line);
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--flag); font-weight:600;
+  max-width:none;
+}
+.pend ol{margin:0; padding:6px 0; list-style:none; max-width:none}
+.pend li{
+  display:grid; grid-template-columns:34px 1fr; gap:8px;
+  padding:12px 20px; margin:0;
+  border-bottom:1px solid var(--line);
+  font-size:15.5px; line-height:1.5;
+}
+.pend li:last-child{border-bottom:none}
+.pend .n{
+  font-family:"IBM Plex Mono", monospace; font-size:12.5px;
+  color:var(--flag); font-weight:600; padding-top:3px;
+  font-variant-numeric:tabular-nums;
+}
+.pend .hot{color:var(--accent)}
+.pend em{display:block; color:var(--ink-3); font-size:13.5px; font-style:normal; margin-top:2px}
+
+footer{
+  border-top:1px solid var(--line);
+  padding-top:24px; color:var(--ink-3); font-size:14px; max-width:68ch;
+}
+footer p{margin:0 0 6px; max-width:68ch}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Documento de definição · Revisão 2 · 27 de agosto de 2026</p>
+    <h1>CRM Clínica Hyllua Husein</h1>
+    <p class="deck">Um painel comercial externo ao Prontuário Verde, para medir o funil da clínica de ponta a ponta — do contato que chega até o procedimento fechado e faturado, em HOF e em Odontologia.</p>
+    <dl class="meta">
+      <div><dt>Origem</dt><dd>Grupo MAESTRI — Hyllua Husein</dd></div>
+      <div><dt>Referência de cálculo</dt><dd>Planilha CRM HOF &amp; Odonto</dd></div>
+      <div><dt>Definido</dt><dd><span class="ok">6 decisões</span> fechadas</dd></div>
+      <div><dt>Em aberto</dt><dd><span class="flagcount">10 pontos</span> a alinhar</dd></div>
+    </dl>
+  </header>
+
+  <nav class="toc" aria-label="Índice">
+    <p>Índice</p>
+    <ol>
+      <li><a href="#s0"><span>00</span>Decidido</a></li>
+      <li><a href="#s1"><span>01</span>Contexto</a></li>
+      <li><a href="#s2"><span>02</span>Objetivo</a></li>
+      <li><a href="#s3"><span>03</span>Fronteira</a></li>
+      <li><a href="#s4"><span>04</span>Usuários</a></li>
+      <li><a href="#s5"><span>05</span>Os dois funis</a></li>
+      <li><a href="#s6"><span>06</span>Métricas</a></li>
+      <li><a href="#s7"><span>07</span>Ajustes</a></li>
+      <li><a href="#s8"><span>08</span>Dados</a></li>
+      <li><a href="#s9"><span>09</span>Telas</a></li>
+      <li><a href="#s10"><span>10</span>Técnico</a></li>
+      <li><a href="#s11"><span>11</span>Risco</a></li>
+      <li><a href="#s12"><span>12</span>Fases</a></li>
+      <li><a href="#s13"><span>13</span>Em aberto</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="s0">
+      <h2><span class="num">00</span>O que já está decidido</h2>
+      <p class="lede">Respostas do cliente e definições extraídas da planilha de referência.</p>
+      <div class="decisions">
+        <p>Fechado</p>
+        <dl>
+          <div class="row"><dt>Escopo</dt><dd><b>Somente comercial.</b> O CRM é um painel externo ao Prontuário Verde. Não é agenda oficial nem prontuário.</dd></div>
+          <div class="row"><dt>Perfis de acesso</dt><dd><b>Dois: Gestão e Agente.</b> O agente faz os lançamentos. Unidade única.</dd></div>
+          <div class="row"><dt>Acesso da consultoria</dt><dd><b>Fora da v1.</b> Sem perfil somente-leitura por enquanto.</dd></div>
+          <div class="row"><dt>Regras de cálculo</dt><dd><b>Definidas pela planilha.</b> Competência pelo mês do evento; faturamento pela data do fechamento. Detalhe na seção 6.</dd></div>
+          <div class="row"><dt>Especialidades</dt><dd><b>Duas: HOF e Odontológico.</b> Toda métrica precisa poder ser filtrada por elas.</dd></div>
+          <div class="row"><dt>Motivos de perda</dt><dd><b>Lista fechada já definida</b> — sete opções, na seção 6.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section id="s1">
+      <h2><span class="num">01</span>Contexto</h2>
+      <p class="lede">O Ricardo, da consultoria Maestri, cobrou o acompanhamento mensal de um conjunto de indicadores comerciais. Três pontos ficaram claros.</p>
+      <ul>
+        <li><strong>Hoje essas métricas não são medidas nem acompanhadas.</strong> Não existe registro estruturado de quantas pessoas entram em contato, por qual canal, e quantas viram agendamento.</li>
+        <li>A clínica usa o <strong>Prontuário Verde (Verdesk)</strong>, que tem um CRM embutido. Avaliação do Felipe: <em>“bom, porém bem limitado”</em> — como o agendamento é feito manualmente na recepção, a distribuição entre os funis fica imprecisa e exige muita correção.</li>
+        <li>Daí a alternativa de um <strong>CRM personalizado</strong>, no mesmo modelo do que já existe no Instituto Hyllua Husein.</li>
+      </ul>
+      <div class="callout">
+        <p>A frase do Ricardo que define o valor do projeto: um aumento de <strong>3% a 5%</strong> em qualquer etapa do funil gera aumento considerável de faturamento. Mas só é possível melhorar o que é medido.</p>
+      </div>
+    </section>
+
+    <section id="s2">
+      <h2><span class="num">02</span>Objetivo</h2>
+      <p class="lede">Registrar o funil comercial de ponta a ponta e transformar isso em indicadores mensais confiáveis, respondendo a sete perguntas:</p>
+      <ol>
+        <li>Quantas pessoas entraram em contato neste mês, e por qual canal?</li>
+        <li>Quantas viraram consulta agendada?</li>
+        <li>Quantos procedimentos foram <strong>ofertados</strong> e quantos foram <strong>fechados</strong>?</li>
+        <li>Qual o ticket médio dos procedimentos vendidos?</li>
+        <li>Quanto faturamos, detalhado por procedimento, tecnologia e especialidade?</li>
+        <li>Quanto veio de <strong>paciente novo</strong> e quanto de <strong>paciente antigo</strong>?</li>
+        <li>Como cada indicador evolui <strong>mês a mês</strong>?</li>
+      </ol>
+    </section>
+
+    <section id="s3">
+      <h2><span class="num">03</span>A fronteira com o Prontuário Verde</h2>
+      <p class="lede">Decidido: somente comercial. Isso define exatamente o que fica em cada sistema.</p>
+      <div class="tablewrap">
+        <table class="split">
+          <thead><tr><th>Fica no CRM</th><th>Continua no Prontuário Verde</th></tr></thead>
+          <tbody>
+            <tr><td>Contato comercial e canal de origem</td><td>Prontuário e evolução clínica</td></tr>
+            <tr><td>Histórico de abordagem</td><td>Anamnese e fichas de avaliação</td></tr>
+            <tr><td>Agendamento <strong>como marcação de métrica</strong></td><td><strong>A agenda oficial da clínica</strong></td></tr>
+            <tr><td>Oferta de procedimento e fechamento</td><td>Fotos, laudos e dados de saúde</td></tr>
+            <tr><td>Valores vendidos e faturamento</td><td>Prescrições</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>O CRM <strong>não armazena dado clínico</strong>, o que mantém o sistema fora da categoria de “dado pessoal sensível” da LGPD e reduz muito a exigência de controles.</p>
+      <div class="callout">
+        <p><strong>Consequência aceita:</strong> a consulta será marcada nos dois lugares — a agenda no Verdesk, o registro de métrica no CRM. Para que isso não vire atrito, o campo no CRM é mínimo: apenas “consulta agendada: sim ou não” e a data.</p>
+      </div>
+    </section>
+
+    <section id="s4">
+      <h2><span class="num">04</span>Usuários</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Perfil</th><th>Quem</th><th>O que faz</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Gestão</strong></td><td>Elisa e direção</td><td>Dashboards, catálogo de procedimentos, canais, usuários e exportação</td></tr>
+            <tr><td><strong>Agente</strong></td><td>Recepção e consultores</td><td>Lança abordagens, agendamentos, ofertas e fechamentos</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Mesmo com apenas dois perfis, <strong>cada lançamento guarda o atendente responsável</strong> — a planilha já faz isso. Sem custo nenhum, isso abre a possibilidade de ver conversão e ticket por atendente mais adiante.</p>
+    </section>
+
+    <section id="s5">
+      <h2><span class="num">05</span>Os dois funis</h2>
+      <p class="lede">As métricas se dividem entre dois funis. É essa separação que o sistema atual não faz — e é o que a planilha estruturou em duas abas.</p>
+
+      <div class="funnels">
+        <div class="funnel">
+          <header>
+            <h4>Funil 1 — Captação</h4>
+            <span class="owner">Aba Abordagens</span>
+          </header>
+          <div class="flow">
+            <span class="step start">Abordagem / contato</span>
+            <span class="arrow">→</span>
+            <span class="step end">Consulta agendada</span>
+          </div>
+          <div class="branch">
+            <b>Registra</b>
+            <span class="chip">Origem do contato</span>
+            <span class="chip">Paciente novo ou antigo</span>
+            <span class="chip">Especialidade</span>
+          </div>
+        </div>
+
+        <div class="funnel">
+          <header>
+            <h4>Funil 2 — Venda</h4>
+            <span class="owner">Aba Negociações</span>
+          </header>
+          <div class="flow">
+            <span class="step start">Procedimento ofertado</span>
+            <span class="arrow">→</span>
+            <span class="step">Fechado</span>
+            <span class="arrow">→</span>
+            <span class="step end">Faturado</span>
+          </div>
+          <div class="branch">
+            <b>Saídas</b>
+            <span class="chip">Perdido, com motivo</span>
+            <span class="chip">Em negociação</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p><strong>A regra que sustenta tudo:</strong> registra-se <strong>toda</strong> abordagem, mesmo a que não vira consulta, e <strong>toda</strong> oferta de procedimento, mesmo a que não fecha. É o denominador de cada conversão. Um mesmo paciente pode gerar várias ofertas, cada uma com seu próprio desfecho.</p>
+      </div>
+
+      <p>E uma dimensão nova, que veio da planilha: a clínica opera <strong>duas especialidades</strong> — <span class="tag hof">HOF</span> e <span class="tag odo">Odontológico</span> — e todo indicador precisa poder ser lido separadamente por cada uma.</p>
+    </section>
+
+    <section id="s6">
+      <h2><span class="num">06</span>Métricas e regras de cálculo</h2>
+      <p class="lede">O painel principal do CRM espelha o Dashboard da planilha. As fórmulas abaixo são as que já estão validadas lá.</p>
+
+      <div class="metrics">
+        <div class="metric">
+          <h4>% Conversão de consultas</h4>
+          <p class="calc">consultas agendadas ÷ abordagens registradas no mês</p>
+        </div>
+        <div class="metric">
+          <h4>% Conversão de procedimentos</h4>
+          <p class="calc">fechados ÷ (fechados + perdidos)<br>“em negociação” fica fora da conta</p>
+        </div>
+        <div class="metric">
+          <h4>Ticket médio</h4>
+          <p class="calc">soma dos valores fechados ÷ nº de procedimentos fechados</p>
+        </div>
+        <div class="metric">
+          <h4>Faturamento do mês</h4>
+          <p class="calc">soma de todos os valores fechados no mês</p>
+        </div>
+      </div>
+
+      <p>Somam-se a esses a quebra de <strong>pacientes novos × antigos</strong>, com quantidade e percentual sobre o total, e o <strong>detalhamento de faturamento</strong> por procedimento e tecnologia: quantidade fechada, faturamento, ticket médio e percentual do total.</p>
+
+      <div class="callout">
+        <p><strong>O que o CRM acrescenta à planilha:</strong> o <strong>comparativo mês a mês</strong> de cada indicador. Hoje o Dashboard mostra um mês por vez — e foi exatamente “mapear para os próximos meses” o que a consultoria pediu.</p>
+      </div>
+
+      <h3>Definições que a planilha fixou</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Conceito</th><th>Definição adotada</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Abordagem</strong></td><td>Todo contato feito, mesmo que não vire consulta. É a base da conversão de consultas.</td></tr>
+            <tr><td><strong>Mês de competência</strong></td><td>Mês do evento: a abordagem conta no mês do contato, a venda no mês da negociação.</td></tr>
+            <tr><td><strong>Faturamento</strong></td><td>Competência pela data do fechamento — não pela data em que as parcelas caem.</td></tr>
+            <tr><td><strong>Paciente novo × antigo</strong></td><td>Classificação manual do agente no momento da abordagem.</td></tr>
+            <tr><td><strong>Valor fechado</strong></td><td>Só preenchido quando o status é “Fechado”.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Motivos de perda — lista fechada</h3>
+      <p>Preço · Sem retorno · Escolheu concorrente · Adiou decisão · Medo ou insegurança · Indisponibilidade de agenda · Outro</p>
+    </section>
+
+    <section id="s7">
+      <h2><span class="num">07</span>Cinco ajustes sobre o modelo da planilha</h2>
+      <p class="lede">A planilha resolve bem a estrutura das métricas. Estes cinco pontos ficaram em aberto nela e o CRM deveria resolver.</p>
+      <ol class="gaps">
+        <li>
+          <span class="g">01</span>
+          <div>
+            <h4>Não existe registro de comparecimento</h4>
+            <p>O funil para em “consulta agendada: sim”. Sem saber se o paciente apareceu, não dá para separar “não vendeu” de “nem chegou a ser atendido” — e a conversão de procedimentos fica injustamente baixa.</p>
+            <span class="fix"><b>Sugestão</b>Um campo a mais na consulta: compareceu, sim ou não.</span>
+          </div>
+        </li>
+        <li>
+          <span class="g">02</span>
+          <div>
+            <h4>“Em negociação” precisa de prazo de validade</h4>
+            <p>Está corretamente fora do denominador da conversão. Mas sem uma regra de corte, uma oferta fica “em negociação” para sempre e nunca entra em conta nenhuma.</p>
+            <span class="fix"><b>Sugestão</b>Depois de X dias sem movimento, vira “perdido — sem retorno”. Definir o X com a clínica.</span>
+          </div>
+        </li>
+        <li>
+          <span class="g">03</span>
+          <div>
+            <h4>Origem do contato é texto livre</h4>
+            <p>Na planilha, o campo é digitado. “Instagram”, “instagram” e “IG” viram três canais diferentes, e o relatório de origem — que é uma das métricas pedidas — se perde.</p>
+            <span class="fix"><b>Sugestão</b>No CRM, lista fechada e configurável.</span>
+          </div>
+        </li>
+        <li>
+          <span class="g">04</span>
+          <div>
+            <h4>A coluna “Abordagem Registrada” é redundante</h4>
+            <p>Ela é sempre “Sim” — existe só para servir de denominador na fórmula.</p>
+            <span class="fix"><b>Sugestão</b>No CRM o campo desaparece: todo registro de lead já é, por definição, uma abordagem.</span>
+          </div>
+        </li>
+        <li>
+          <span class="g">05</span>
+          <div>
+            <h4>Pacotes de sessões não estão previstos</h4>
+            <p>A planilha trata cada oferta como uma venda de valor único.</p>
+            <span class="fix"><b>Sugestão</b>Se a clínica vende pacotes, o pacote entra como uma venda com o valor cheio, e as sessões executadas são acompanhadas à parte, sem somar faturamento de novo.</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="s8">
+      <h2><span class="num">08</span>Estrutura de dados</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Entidade</th><th>Campos</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Abordagem</strong></td><td>Data, especialidade, paciente, tipo (novo/antigo), origem do contato, consulta agendada, data da consulta, atendente, observações</td></tr>
+            <tr><td><strong>Oferta</strong></td><td>Data, especialidade, paciente, procedimento, tecnologia, valor ofertado, status, valor fechado, motivo da perda, atendente</td></tr>
+            <tr><td><strong>Catálogo</strong></td><td>Procedimento, tecnologia, especialidade, valor de tabela, ativo</td></tr>
+            <tr><td><strong>Canais de origem</strong></td><td>Lista configurável</td></tr>
+            <tr><td><strong>Usuários</strong></td><td>Nome, login, perfil</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Catálogo-base de procedimentos</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Procedimento</th><th>Tecnologia / Técnica</th><th>Especialidade</th></tr></thead>
+          <tbody>
+            <tr><td>Preenchimento Labial</td><td>Ácido Hialurônico</td><td><span class="tag hof">HOF</span></td></tr>
+            <tr><td>Toxina Botulínica</td><td>Botox</td><td><span class="tag hof">HOF</span></td></tr>
+            <tr><td>Bioestimulador</td><td>Sculptra / Radiesse</td><td><span class="tag hof">HOF</span></td></tr>
+            <tr><td>Fios de Sustentação</td><td>PDO</td><td><span class="tag hof">HOF</span></td></tr>
+            <tr><td>Clareamento Dental</td><td>Laser</td><td><span class="tag odo">Odonto</span></td></tr>
+            <tr><td>Implante Dentário</td><td>Implante</td><td><span class="tag odo">Odonto</span></td></tr>
+            <tr><td>Facetas / Lentes de Contato</td><td>Cerâmica</td><td><span class="tag odo">Odonto</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flagbox">
+        <span class="flaglabel">Ponto em aberto</span>
+        <p>Esta é a lista genérica de exemplo da planilha, <strong>sem preços</strong>. Ainda precisamos da tabela de preços real da clínica e da confirmação de que a lista está completa.</p>
+      </div>
+
+      <h3>Canais de origem</h3>
+      <p>Aparecem na planilha, como texto livre: <strong>Instagram, Indicação e Google</strong>.</p>
+      <div class="flagbox">
+        <span class="flaglabel">Ponto em aberto</span>
+        <p>Falta a lista real e fechada. E permanece a pergunta mais importante: como o WhatsApp concentra cerca de 90% dos contatos, <strong>dá para o agente perguntar o que levou a pessoa até o WhatsApp</strong> — anúncio, story, indicação? Sem isso, a maior parte do funil vira uma caixa-preta chamada “WhatsApp”.</p>
+      </div>
+    </section>
+
+    <section id="s9">
+      <h2><span class="num">09</span>Telas</h2>
+      <ol>
+        <li><strong>Dashboard.</strong> Os indicadores da seção 6, com seletor de mês, filtro por especialidade e comparativo com os meses anteriores.</li>
+        <li><strong>Abordagens.</strong> Lista e lançamento rápido do Funil 1.</li>
+        <li><strong>Negociações.</strong> Lista e lançamento do Funil 2, com o desfecho de cada oferta.</li>
+        <li><strong>Ficha do paciente.</strong> Abordagens e ofertas da mesma pessoa reunidas.</li>
+        <li><strong>Relatórios.</strong> Detalhamento de faturamento e exportação em Excel para a reunião mensal.</li>
+        <li><strong>Configurações.</strong> Catálogo de procedimentos, canais, motivos de perda e usuários.</li>
+      </ol>
+    </section>
+
+    <section id="s10">
+      <h2><span class="num">10</span>Requisitos técnicos</h2>
+      <ul>
+        <li><strong>Aplicação web responsiva, com o celular em primeiro lugar.</strong> O agente lança no meio do atendimento — se não for rápido no telefone, o sistema não é alimentado e as métricas morrem. Abre pelo navegador, sem instalar nada.</li>
+        <li><strong>Mesma arquitetura já validada:</strong> página única com Supabase para banco, autenticação e permissão por perfil, publicada no GitHub Pages.</li>
+        <li><strong>Base de dados própria da Clínica</strong>, separada do CRM do Instituto.</li>
+        <li><strong>Reaproveitamento</strong> do CRM do Instituto: login, usuários, listas, ficha e exportação. O que é novo é o Funil 2, o dashboard e o filtro por especialidade.</li>
+        <li><strong>LGPD:</strong> sem dado clínico, acesso só com login, exportação restrita à Gestão.</li>
+      </ul>
+      <p>Sobre integrações — Verdesk, WhatsApp oficial, Meta e Google Ads — todas são <strong>aditivas</strong>: apenas preencheriam automaticamente campos que já existem. O projeto anda inteiro com lançamento manual e ganha integração depois, sem retrabalho.</p>
+    </section>
+
+    <section id="s11">
+      <h2><span class="num">11</span>O risco principal</h2>
+      <div class="callout">
+        <p>O Felipe apontou que o CRM do Prontuário Verde falha porque <strong>o lançamento é manual</strong>. Um CRM novo não resolve isso sozinho — só muda o lugar da digitação. E, com a decisão de manter a agenda no Verdesk, a consulta passa a ser marcada nos dois sistemas.</p>
+      </div>
+      <p>Isso é aceitável, mas exige três condições:</p>
+      <ol>
+        <li><strong>Lançamento de poucos segundos no celular.</strong> A abordagem tem quatro campos: paciente, especialidade, origem e se agendou.</li>
+        <li><strong>Dono do dado definido.</strong> O agente lança, a gestão confere no fechamento do mês.</li>
+        <li><strong>Medir só o que vai para a reunião mensal.</strong> Campo que ninguém olha vira campo que ninguém preenche.</li>
+      </ol>
+    </section>
+
+    <section id="s12">
+      <h2><span class="num">12</span>Fases de entrega</h2>
+      <ol class="phases">
+        <li>
+          <span class="ph">Fase 1</span>
+          <div>
+            <h4>Funil de captação</h4>
+            <p>Abordagens, canais de origem, tipo de paciente, consulta agendada e especialidade. Dashboard com conversão de consultas e a quebra novo × antigo.</p>
+          </div>
+        </li>
+        <li>
+          <span class="ph">Fase 2</span>
+          <div>
+            <h4>Funil de venda</h4>
+            <p>Catálogo de procedimentos com tecnologia, oferta, status, valor fechado e motivo da perda. Dashboard com conversão de procedimentos, ticket médio, faturamento e detalhamento.</p>
+          </div>
+        </li>
+        <li>
+          <span class="ph">Fase 3</span>
+          <div>
+            <h4>Refino</h4>
+            <p>Comparativo mês a mês, exportação do fechamento, desempenho por atendente, comparecimento e as demais complementares aprovadas.</p>
+          </div>
+        </li>
+        <li>
+          <span class="ph">Fase 4</span>
+          <div>
+            <h4>Integrações</h4>
+            <p>Verdesk, WhatsApp e Ads — se e quando fizerem sentido.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="s13">
+      <h2><span class="num">13</span>O que ainda falta alinhar</h2>
+      <p class="lede">Dez pontos. Os três primeiros são os que travam o início do desenvolvimento.</p>
+      <div class="pend">
+        <p>10 pontos em aberto</p>
+        <ol>
+          <li><span class="n hot">01</span><div>Tabela de preços real e confirmação de que o catálogo de procedimentos está completo.<em>Seção 8</em></div></li>
+          <li><span class="n hot">02</span><div>Lista fechada de canais de origem — e se dá para sub-classificar a origem dentro do WhatsApp.<em>Seção 8</em></div></li>
+          <li><span class="n hot">03</span><div>Existe histórico a importar, planilha em uso ou exportação do Verdesk, ou começa do zero?</div></li>
+          <li><span class="n">04</span><div>As métricas complementares — comparecimento, tempo de resposta, recompra, desempenho por atendente — entram na v1?</div></li>
+          <li><span class="n">05</span><div>CPF e dados cadastrais completos são necessários, ou basta o nome, como na planilha?</div></li>
+          <li><span class="n">06</span><div>Depois de quantos dias sem movimento uma oferta “em negociação” vira perdida?<em>Seção 7</em></div></li>
+          <li><span class="n">07</span><div>O registro de comparecimento e no-show entra no escopo?<em>Seção 7</em></div></li>
+          <li><span class="n">08</span><div>A clínica vende pacotes de sessões? Se sim, confirmar a regra de contagem.<em>Seção 7</em></div></li>
+          <li><span class="n">09</span><div>Prazo esperado — a consultoria pediu para mapear os próximos meses, então provavelmente há data.</div></li>
+          <li><span class="n">10</span><div>Domínio e endereço de acesso do sistema.</div></li>
+        </ol>
+      </div>
+    </section>
+
+    <footer>
+      <p>Documento de definição — base para o desenho de telas e do banco de dados.</p>
+      <p>Revisão 2, de 27 de agosto de 2026, incorporando as respostas do cliente e a planilha de referência CRM Clínica — HOF &amp; Odontológico.</p>
+    </footer>
+
+  </main>
+</div>

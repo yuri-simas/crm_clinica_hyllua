@@ -1,0 +1,587 @@
+<title>CRM Comercial Hyllua Husein</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+@font-face{font-family:"Scotch Text";src:url(data:font/otf;base64,__SCOTCH_ROMAN__) format("opentype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Scotch Text";src:url(data:font/otf;base64,__SCOTCH_SEMI__) format("opentype");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Scotch Text";src:url(data:font/otf;base64,__SCOTCH_ITALIC__) format("opentype");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Neue Montreal";src:url(data:font/ttf;base64,__NM_BOOK__) format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Neue Montreal";src:url(data:font/ttf;base64,__NM_MEDIUM__) format("truetype");font-weight:500;font-style:normal;font-display:swap}
+
+:root{
+  --verde:#353a2c;
+  --creme:#f7eccd;
+  --salvia:#abb48d;
+  --terracota:#a8623f;
+  --ouro:#b89c6c;
+  --marrom:#783c18;
+  --verde-2:#454b3a;
+  --creme-2:#efe1bc;
+  --tinta:#353a2c;
+  --tinta-2:#5c634f;
+  --serif:"Scotch Text", Georgia, "Times New Roman", serif;
+  --sans:"Neue Montreal", "Helvetica Neue", Arial, sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--verde);
+  color:var(--creme);
+  font-family:var(--sans);
+  font-size:17px;
+  line-height:1.6;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- deck shell ---------- */
+.deck{position:fixed; inset:0}
+.slide{
+  position:absolute; inset:0;
+  display:none;
+  padding:clamp(28px,5vh,64px) clamp(24px,6vw,96px) clamp(64px,9vh,90px);
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+.slide.on{display:flex; flex-direction:column; justify-content:center}
+.slide.on > *{animation:rise .5s cubic-bezier(.2,.7,.3,1) both}
+.slide.on > *:nth-child(2){animation-delay:.06s}
+.slide.on > *:nth-child(3){animation-delay:.12s}
+.slide.on > *:nth-child(4){animation-delay:.18s}
+@keyframes rise{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .slide.on > *{animation:none}
+}
+
+.slide.dark{background:var(--verde); color:var(--creme)}
+.slide.light{background:var(--creme); color:var(--tinta)}
+
+/* ---------- chrome ---------- */
+.chrome{
+  position:fixed; left:0; right:0; bottom:0;
+  height:56px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 calc(clamp(24px,6vw,96px) + 96px) 0 clamp(24px,6vw,96px);
+  font-family:var(--sans);
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  pointer-events:none;
+  z-index:5;
+}
+.chrome .mark{display:flex; align-items:center; gap:12px; opacity:.62}
+.chrome .mark svg{width:16px; height:auto; display:block}
+.chrome .count{font-variant-numeric:tabular-nums; opacity:.62}
+.chrome.on-dark{color:var(--creme)}
+.chrome.on-light{color:var(--tinta-2)}
+.bar{
+  position:fixed; left:0; bottom:0; height:2px;
+  background:var(--terracota);
+  transition:width .45s cubic-bezier(.2,.7,.3,1);
+  z-index:6;
+}
+.nav{
+  position:fixed; bottom:10px; right:clamp(24px,6vw,96px);
+  display:flex; gap:8px; z-index:7;
+}
+.nav button{
+  width:34px; height:34px; border-radius:50%;
+  border:1px solid currentColor; background:transparent;
+  color:inherit; cursor:pointer;
+  font-family:var(--sans); font-size:15px; line-height:1;
+  opacity:.45; transition:opacity .2s;
+  display:grid; place-items:center;
+}
+.nav button:hover{opacity:1}
+.nav.on-dark button{color:var(--creme)}
+.nav.on-light button{color:var(--tinta)}
+:focus-visible{outline:2px solid var(--terracota); outline-offset:3px}
+
+/* ---------- shared type ---------- */
+.eyebrow{
+  font-family:var(--sans);
+  font-size:clamp(10px,1.1vw,12px);
+  letter-spacing:.2em; text-transform:uppercase;
+  margin:0 0 clamp(18px,3vh,30px);
+  display:flex; align-items:center; gap:14px;
+}
+.eyebrow::after{content:""; flex:1; height:1px; background:currentColor; opacity:.28; max-width:180px}
+.dark .eyebrow{color:var(--ouro)}
+.light .eyebrow{color:var(--terracota)}
+
+h2{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:clamp(30px,4.6vw,58px);
+  line-height:1.08;
+  letter-spacing:-.01em;
+  margin:0 0 clamp(14px,2.4vh,26px);
+  max-width:20ch;
+  text-wrap:balance;
+}
+.sub{
+  font-size:clamp(15px,1.5vw,19px);
+  line-height:1.55;
+  max-width:62ch;
+  margin:0 0 clamp(20px,3.4vh,34px);
+}
+.dark .sub{color:var(--salvia)}
+.light .sub{color:var(--tinta-2)}
+em{font-style:italic}
+strong{font-weight:500}
+.light strong{color:var(--marrom)}
+.dark strong{color:var(--creme)}
+
+/* ---------- cover ---------- */
+.cover{justify-content:space-between !important}
+.cover .top{display:flex; flex-direction:column; gap:8px}
+.cover .wordmark{width:min(560px,72vw); height:auto; color:var(--creme); display:block}
+.cover .wordmark svg{width:100%; height:auto; display:block}
+.cover h1{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(38px,7vw,86px);
+  line-height:1.02; letter-spacing:-.015em;
+  margin:clamp(24px,5vh,52px) 0 18px;
+  max-width:15ch;
+}
+.cover h1 span{color:var(--ouro); font-style:italic}
+.cover .lede{
+  font-size:clamp(16px,1.7vw,21px); line-height:1.5;
+  color:var(--salvia); max-width:52ch; margin:0;
+}
+.cover .foot{
+  display:flex; flex-wrap:wrap; gap:8px 40px;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ouro);
+}
+.cover .hint{opacity:.55}
+
+/* ---------- statement slide ---------- */
+.statement blockquote{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(28px,4.8vw,62px);
+  line-height:1.12; letter-spacing:-.01em;
+  margin:0 0 clamp(20px,3.4vh,34px);
+  max-width:19ch;
+  text-wrap:balance;
+}
+.statement blockquote b{color:var(--ouro); font-weight:400; font-style:italic}
+.statement .attrib{
+  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--salvia); margin:0;
+}
+.bignum{
+  font-family:var(--serif);
+  font-size:clamp(90px,20vw,260px);
+  line-height:.85; letter-spacing:-.03em;
+  color:var(--terracota);
+  margin:0 0 clamp(16px,3vh,30px);
+}
+
+/* ---------- divider slide ---------- */
+.divider{align-items:flex-start}
+.divider .step{
+  font-family:var(--serif);
+  font-size:clamp(52px,11vw,150px);
+  line-height:.9; color:var(--verde-2);
+  margin:0 0 -.12em;
+  -webkit-text-stroke:1px var(--ouro);
+  color:transparent;
+}
+.divider h2{font-size:clamp(34px,6.4vw,80px); max-width:16ch; margin-top:0}
+.divider .note{color:var(--salvia); max-width:52ch; font-size:clamp(15px,1.5vw,19px); margin:0}
+
+/* ---------- generic grid ---------- */
+.grid{display:grid; gap:clamp(10px,1.6vw,18px); margin:0}
+.g2{grid-template-columns:1fr}
+@media (min-width:760px){ .g2{grid-template-columns:1fr 1fr} }
+.g3{grid-template-columns:1fr}
+@media (min-width:700px){ .g3{grid-template-columns:1fr 1fr} }
+@media (min-width:1080px){ .g3{grid-template-columns:repeat(3,1fr)} }
+
+.card{
+  border:1px solid rgba(53,58,44,.16);
+  border-radius:3px;
+  padding:clamp(14px,1.6vw,22px);
+  background:rgba(255,255,255,.42);
+}
+.card h3{
+  font-family:var(--sans); font-weight:500;
+  font-size:clamp(13px,1.15vw,15px);
+  letter-spacing:.02em;
+  margin:0 0 7px; color:var(--marrom);
+}
+.card p{margin:0; font-size:clamp(14px,1.25vw,16px); line-height:1.45; color:var(--tinta)}
+.card .lbl{
+  display:block; font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ouro); margin-bottom:9px;
+}
+
+/* ---------- funnel ---------- */
+.funnel{
+  border-top:1px solid rgba(53,58,44,.22);
+  padding-top:clamp(16px,2.4vh,26px);
+  margin:0;
+}
+.flow{display:flex; flex-wrap:wrap; align-items:center; gap:clamp(8px,1.2vw,14px); margin-bottom:16px}
+.node{
+  font-family:var(--sans); font-weight:500;
+  font-size:clamp(13px,1.25vw,17px);
+  padding:clamp(9px,1.1vw,14px) clamp(13px,1.5vw,20px);
+  border:1px solid var(--tinta); border-radius:2px;
+  line-height:1.25;
+}
+.node.a{background:var(--terracota); border-color:var(--terracota); color:var(--creme)}
+.node.b{background:transparent; color:var(--tinta)}
+.node.c{background:var(--verde); border-color:var(--verde); color:var(--creme)}
+.link{width:clamp(16px,2.4vw,38px); height:1px; background:var(--tinta); opacity:.45; flex:none}
+.outs{display:flex; flex-wrap:wrap; gap:8px; align-items:baseline; font-size:clamp(12px,1.15vw,15px); color:var(--tinta-2)}
+.outs .k{font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ouro)}
+.outs span.o{border-bottom:1px dashed var(--ouro); padding-bottom:1px}
+
+/* ---------- metrics ---------- */
+.metric{
+  border:1px solid rgba(53,58,44,.16);
+  border-top:2px solid var(--terracota);
+  border-radius:3px;
+  padding:clamp(14px,1.6vw,20px);
+  background:rgba(255,255,255,.42);
+}
+.metric h3{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(17px,1.7vw,23px); line-height:1.2;
+  margin:0 0 10px; color:var(--tinta);
+}
+.metric p{
+  margin:0; font-size:clamp(12.5px,1.1vw,14.5px); line-height:1.5;
+  color:var(--marrom);
+  font-family:var(--sans);
+}
+
+/* ---------- table ---------- */
+.tbl{width:100%; border-collapse:collapse; font-size:clamp(13px,1.15vw,16px)}
+.tbl th,.tbl td{text-align:left; padding:clamp(8px,1.1vh,13px) 0; border-bottom:1px solid rgba(53,58,44,.16); vertical-align:top}
+.tbl th{
+  font-family:var(--sans); font-weight:400;
+  font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ouro); white-space:nowrap; padding-right:26px;
+}
+.tbl td:first-child{padding-right:26px; font-weight:500; white-space:nowrap; color:var(--marrom)}
+.tbl tr:last-child th,.tbl tr:last-child td{border-bottom:none}
+
+/* ---------- numbered list ---------- */
+.numlist{list-style:none; margin:0; padding:0; display:grid; gap:clamp(8px,1.3vh,16px)}
+.numlist li{display:grid; grid-template-columns:34px 1fr; gap:clamp(10px,1.4vw,18px); align-items:baseline}
+.numlist .n{
+  font-family:var(--serif); font-size:clamp(15px,1.5vw,20px);
+  color:var(--terracota); font-variant-numeric:tabular-nums;
+}
+.numlist h3{
+  font-family:var(--sans); font-weight:500;
+  font-size:clamp(14px,1.25vw,17px); margin:0 0 3px; color:var(--tinta);
+}
+.numlist p{margin:0; font-size:clamp(13px,1.15vw,15.5px); line-height:1.45; color:var(--tinta-2)}
+.numlist .fix{color:var(--marrom)}
+
+/* two-column pendency list */
+.pendcols{display:block; columns:1; column-gap:clamp(24px,4vw,56px); margin:0}
+@media (min-width:820px){ .pendcols{columns:2} }
+@media (min-width:1180px){ .pendcols{columns:3} }
+.pendcols li{break-inside:avoid; margin-bottom:clamp(6px,1vh,12px)}
+.pendcols .n{font-size:clamp(13px,1.25vw,17px)}
+.pendcols h3{font-size:clamp(13px,1.1vw,15px); margin-bottom:1px}
+.pendcols p{font-size:clamp(12px,1.02vw,14px); line-height:1.38}
+
+/* ---------- phases ---------- */
+.phases{list-style:none; margin:0; padding:0; display:grid; gap:0}
+.phases li{
+  display:grid; grid-template-columns:auto 1fr; gap:clamp(14px,2vw,28px);
+  padding:clamp(11px,1.7vh,20px) 0;
+  border-bottom:1px solid rgba(53,58,44,.16);
+  align-items:baseline;
+}
+.phases li:last-child{border-bottom:none}
+.phases .ph{
+  font-family:var(--sans); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ouro); white-space:nowrap; min-width:62px;
+}
+.phases h3{font-family:var(--serif); font-weight:400; font-size:clamp(18px,1.9vw,26px); margin:0 0 3px; color:var(--tinta)}
+.phases p{margin:0; font-size:clamp(13px,1.15vw,15.5px); line-height:1.45; color:var(--tinta-2)}
+
+/* ---------- closing ---------- */
+.closing{align-items:center; text-align:center; justify-content:center !important}
+.closing .sym{width:clamp(64px,9vw,104px); color:var(--ouro); margin:0 auto clamp(22px,4vh,40px)}
+.closing .sym svg{width:100%; height:auto; display:block}
+.closing h2{max-width:22ch; margin-left:auto; margin-right:auto}
+.closing .sub{margin-left:auto; margin-right:auto}
+.closing .next{
+  display:flex; flex-wrap:wrap; gap:10px 34px; justify-content:center;
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ouro);
+  margin:0;
+}
+
+/* specialty tags */
+.tag{
+  font-family:var(--sans); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  padding:3px 10px; border-radius:99px; white-space:nowrap; font-weight:500;
+}
+.tag.hof{background:var(--terracota); color:var(--creme)}
+.tag.odo{background:var(--verde); color:var(--creme)}
+</style>
+
+<div class="deck" id="deck">
+
+  <!-- 1 CAPA -->
+  <section class="slide dark cover">
+    <div class="top">
+      <div class="wordmark">__WORDMARK__</div>
+    </div>
+    <div>
+      <h1>CRM <span>Comercial</span></h1>
+      <p class="lede">Medir o funil da clínica de ponta a ponta — do primeiro contato ao procedimento fechado e faturado.</p>
+    </div>
+    <div class="foot">
+      <span>Documento de definição</span>
+      <span>28 de agosto de 2026</span>
+      <span class="hint">Use → para avançar</span>
+    </div>
+  </section>
+
+  <!-- 2 O PROBLEMA -->
+  <section class="slide dark statement">
+    <p class="eyebrow">O ponto de partida</p>
+    <blockquote>Hoje essas métricas <b>não são medidas nem acompanhadas.</b></blockquote>
+    <p class="attrib">Não existe registro estruturado de quantas pessoas entram em contato, por qual canal, e quantas viram agendamento</p>
+  </section>
+
+  <!-- 3 O VALOR -->
+  <section class="slide dark statement">
+    <p class="eyebrow">Por que isso importa</p>
+    <p class="bignum">3–5%</p>
+    <blockquote>de ganho em <b>qualquer etapa do funil</b> gera aumento considerável de faturamento.</blockquote>
+    <p class="attrib">Ricardo · Consultoria Maestri</p>
+  </section>
+
+  <!-- 4 DECIDIDO -->
+  <section class="slide light">
+    <p class="eyebrow">O que já está decidido</p>
+    <h2>Seis definições fechadas</h2>
+    <div class="grid g3">
+      <div class="card"><span class="lbl">Escopo</span><h3>Somente comercial</h3><p>Painel externo ao Prontuário Verde. Não é agenda oficial nem prontuário.</p></div>
+      <div class="card"><span class="lbl">Acesso</span><h3>Dois perfis</h3><p>Gestão e Agente. O agente faz os lançamentos. Unidade única.</p></div>
+      <div class="card"><span class="lbl">Consultoria</span><h3>Fora da v1</h3><p>Sem perfil somente-leitura para a consultoria por enquanto.</p></div>
+      <div class="card"><span class="lbl">Cálculo</span><h3>Regras definidas</h3><p>Competência pelo mês do evento. Faturamento pela data do fechamento.</p></div>
+      <div class="card"><span class="lbl">Operação</span><h3>Duas especialidades</h3><p>HOF e Odontológico. Toda métrica precisa filtrar por elas.</p></div>
+      <div class="card"><span class="lbl">Perdas</span><h3>Lista fechada</h3><p>Sete motivos padronizados, do preço à indisponibilidade de agenda.</p></div>
+    </div>
+  </section>
+
+  <!-- 5 DIVISOR FUNIS -->
+  <section class="slide dark divider">
+    <p class="step">01</p>
+    <h2>Dois funis, dois donos</h2>
+    <p class="note">As métricas pedidas pela consultoria se dividem entre duas etapas distintas. É essa separação que o sistema atual não faz.</p>
+  </section>
+
+  <!-- 6 FUNIL 1 -->
+  <section class="slide light">
+    <p class="eyebrow">Funil 1 · Captação</p>
+    <h2>Do contato à consulta agendada</h2>
+    <div class="funnel">
+      <div class="flow">
+        <span class="node a">Abordagem / contato</span>
+        <span class="link"></span>
+        <span class="node c">Consulta agendada</span>
+      </div>
+      <p class="outs"><span class="k">Registra</span> <span class="o">Origem do contato</span> <span class="o">Paciente novo ou antigo</span> <span class="o">Especialidade</span> <span class="o">Atendente</span></p>
+    </div>
+    <p class="sub" style="margin-top:clamp(18px,3vh,30px)"><strong>A regra que sustenta a métrica:</strong> registra-se toda abordagem, mesmo a que não vira consulta. É ela o denominador da conversão.</p>
+  </section>
+
+  <!-- 7 FUNIL 2 -->
+  <section class="slide light">
+    <p class="eyebrow">Funil 2 · Venda</p>
+    <h2>Da oferta ao faturamento</h2>
+    <div class="funnel">
+      <div class="flow">
+        <span class="node a">Procedimento ofertado</span>
+        <span class="link"></span>
+        <span class="node b">Fechado</span>
+        <span class="link"></span>
+        <span class="node c">Faturado</span>
+      </div>
+      <p class="outs"><span class="k">Saídas</span> <span class="o">Perdido, com motivo</span> <span class="o">Em negociação</span></p>
+    </div>
+    <p class="sub" style="margin-top:clamp(18px,3vh,30px)"><strong>Um paciente gera várias ofertas.</strong> Cada procedimento oferecido é uma linha com seu próprio desfecho. Se o sistema tratar “uma consulta igual a uma venda”, a conversão não fecha.</p>
+  </section>
+
+  <!-- 8 ESPECIALIDADES -->
+  <section class="slide light">
+    <p class="eyebrow">Uma dimensão em tudo</p>
+    <h2>Toda métrica lida por especialidade</h2>
+    <p class="sub">A clínica opera duas frentes com ticket, ciclo de decisão e canal de origem diferentes. Ler os dois juntos esconde o que está funcionando em cada uma.</p>
+    <div class="grid g2">
+      <div class="card"><span class="tag hof">HOF</span><p style="margin-top:12px">Preenchimento labial, toxina botulínica, bioestimuladores, fios de sustentação.</p></div>
+      <div class="card"><span class="tag odo">Odontológico</span><p style="margin-top:12px">Clareamento, implantes, facetas e lentes de contato.</p></div>
+    </div>
+  </section>
+
+  <!-- 9 MÉTRICAS -->
+  <section class="slide light">
+    <p class="eyebrow">O painel</p>
+    <h2>Quatro indicadores no topo</h2>
+    <div class="grid g2">
+      <div class="metric"><h3>Conversão de consultas</h3><p>consultas agendadas ÷ abordagens registradas no mês</p></div>
+      <div class="metric"><h3>Conversão de procedimentos</h3><p>fechados ÷ (fechados + perdidos) — “em negociação” fica fora da conta</p></div>
+      <div class="metric"><h3>Ticket médio</h3><p>soma dos valores fechados ÷ nº de procedimentos vendidos</p></div>
+      <div class="metric"><h3>Faturamento do mês</h3><p>soma de todos os valores fechados no mês</p></div>
+    </div>
+    <p class="sub" style="margin-top:clamp(16px,2.6vh,26px)">Somam-se a quebra de <strong>pacientes novos × antigos</strong> e o detalhamento de faturamento por procedimento e tecnologia.</p>
+  </section>
+
+  <!-- 10 O QUE ACRESCENTAMOS -->
+  <section class="slide dark statement">
+    <p class="eyebrow">O que o CRM acrescenta</p>
+    <blockquote>A planilha mostra <b>um mês por vez.</b> O CRM mostra a <b>evolução mês a mês.</b></blockquote>
+    <p class="attrib">Foi exatamente “mapear para os próximos meses” o que a consultoria pediu</p>
+  </section>
+
+  <!-- 11 REGRAS -->
+  <section class="slide light">
+    <p class="eyebrow">Regras de cálculo</p>
+    <h2>Definições adotadas</h2>
+    <table class="tbl">
+      <tr><th>Conceito</th><th>Definição</th></tr>
+      <tr><td>Abordagem</td><td>Todo contato feito, mesmo que não vire consulta. É a base da conversão de consultas.</td></tr>
+      <tr><td>Competência</td><td>Mês do evento: a abordagem conta no mês do contato, a venda no mês da negociação.</td></tr>
+      <tr><td>Faturamento</td><td>Pela data do fechamento — não pela data em que as parcelas caem.</td></tr>
+      <tr><td>Novo × antigo</td><td>Classificação do agente no momento da abordagem.</td></tr>
+      <tr><td>Valor fechado</td><td>Só preenchido quando o status é “Fechado”.</td></tr>
+    </table>
+  </section>
+
+  <!-- 12 DIVISOR AJUSTES -->
+  <section class="slide dark divider">
+    <p class="step">02</p>
+    <h2>O que ainda precisa ser resolvido</h2>
+    <p class="note">A planilha estrutura bem as métricas. Cinco pontos ficaram em aberto nela — e o CRM deveria resolver.</p>
+  </section>
+
+  <!-- 13 OS 5 AJUSTES -->
+  <section class="slide light">
+    <p class="eyebrow">Cinco ajustes</p>
+    <ol class="numlist">
+      <li><span class="n">01</span><div><h3>Não existe registro de comparecimento</h3><p>O funil para em “consulta agendada”. Sem saber se o paciente apareceu, mistura-se “não vendeu” com “nem foi atendido”. <span class="fix">Sugestão: um campo de comparecimento.</span></p></div></li>
+      <li><span class="n">02</span><div><h3>“Em negociação” sem prazo de validade</h3><p>Está fora do denominador, o que é certo. Mas sem regra de corte, uma oferta fica nesse limbo para sempre. <span class="fix">Sugestão: após X dias sem movimento, vira perdida.</span></p></div></li>
+      <li><span class="n">03</span><div><h3>Origem do contato é texto livre</h3><p>“Instagram”, “instagram” e “IG” viram três canais, e o relatório de origem se perde. <span class="fix">Sugestão: lista fechada e configurável.</span></p></div></li>
+      <li><span class="n">04</span><div><h3>Uma coluna redundante</h3><p>“Abordagem registrada” é sempre “sim”. <span class="fix">No CRM ela some: todo lead já é uma abordagem.</span></p></div></li>
+      <li><span class="n">05</span><div><h3>Pacotes de sessões não previstos</h3><p>Cada oferta é tratada como venda de valor único. <span class="fix">Sugestão: o pacote entra como uma venda com o valor cheio; as sessões são acompanhadas à parte.</span></p></div></li>
+    </ol>
+  </section>
+
+  <!-- 14 RISCO -->
+  <section class="slide light">
+    <p class="eyebrow">O risco principal</p>
+    <h2>A ferramenta não resolve o lançamento manual</h2>
+    <p class="sub">O CRM do Prontuário Verde falha porque o registro depende de alguém digitar. Um CRM novo não muda isso — só muda o lugar da digitação. Três condições fazem o projeto dar certo:</p>
+    <div class="grid g3">
+      <div class="card"><span class="lbl">01</span><h3>Segundos no celular</h3><p>A abordagem tem quatro campos: paciente, especialidade, origem e se agendou.</p></div>
+      <div class="card"><span class="lbl">02</span><h3>Dono do dado</h3><p>O agente lança, a gestão confere no fechamento do mês.</p></div>
+      <div class="card"><span class="lbl">03</span><h3>Só o que se usa</h3><p>Campo que ninguém olha na reunião vira campo que ninguém preenche.</p></div>
+    </div>
+  </section>
+
+  <!-- 15 FASES -->
+  <section class="slide light">
+    <p class="eyebrow">Entrega</p>
+    <h2>Quatro fases</h2>
+    <ol class="phases">
+      <li><span class="ph">Fase 1</span><div><h3>Funil de captação</h3><p>Abordagens, canais, tipo de paciente, agendamento e especialidade. Dashboard com conversão de consultas e novo × antigo.</p></div></li>
+      <li><span class="ph">Fase 2</span><div><h3>Funil de venda</h3><p>Catálogo com tecnologia, oferta, status, valor fechado e motivo da perda. Conversão de procedimentos, ticket médio e faturamento.</p></div></li>
+      <li><span class="ph">Fase 3</span><div><h3>Refino</h3><p>Comparativo mês a mês, exportação do fechamento e desempenho por atendente.</p></div></li>
+      <li><span class="ph">Fase 4</span><div><h3>Integrações</h3><p>Verdesk, WhatsApp e Ads — se e quando fizerem sentido.</p></div></li>
+    </ol>
+  </section>
+
+  <!-- 16 PENDÊNCIAS -->
+  <section class="slide light">
+    <p class="eyebrow">Para fechar o escopo</p>
+    <h2>Dez pontos em aberto</h2>
+    <ol class="numlist pendcols">
+      <li><span class="n">01</span><div><h3>Tabela de preços real</h3><p>E confirmação de que o catálogo está completo.</p></div></li>
+      <li><span class="n">02</span><div><h3>Canais de origem</h3><p>Lista fechada — e como descobrir o que leva a pessoa ao WhatsApp.</p></div></li>
+      <li><span class="n">03</span><div><h3>Histórico a importar</h3><p>Planilha em uso, exportação do Verdesk, ou começa do zero?</p></div></li>
+      <li><span class="n">04</span><div><h3>Métricas complementares</h3><p>Comparecimento, tempo de resposta, recompra: entram na v1?</p></div></li>
+      <li><span class="n">05</span><div><h3>Dados cadastrais</h3><p>CPF e endereço são necessários, ou basta o nome?</p></div></li>
+      <li><span class="n">06</span><div><h3>Corte da negociação</h3><p>Depois de quantos dias uma oferta parada vira perdida?</p></div></li>
+      <li><span class="n">07</span><div><h3>Comparecimento</h3><p>O registro de no-show entra no escopo?</p></div></li>
+      <li><span class="n">08</span><div><h3>Pacotes de sessões</h3><p>A clínica vende? Se sim, qual a regra de contagem?</p></div></li>
+      <li><span class="n">09</span><div><h3>Prazo</h3><p>A consultoria pediu para mapear os próximos meses.</p></div></li>
+      <li><span class="n">10</span><div><h3>Endereço de acesso</h3><p>Domínio próprio da clínica ou endereço nosso?</p></div></li>
+    </ol>
+  </section>
+
+  <!-- 17 FECHAMENTO -->
+  <section class="slide dark closing">
+    <div class="sym">__SYMBOL__</div>
+    <h2>O próximo passo é a tabela de preços e a lista de canais</h2>
+    <p class="sub">Com esses dois, a Fase 1 entra em desenvolvimento e a clínica passa a ter o primeiro mês medido.</p>
+    <p class="next"><span>Tabela de preços</span><span>Canais de origem</span><span>Histórico a importar</span></p>
+  </section>
+
+</div>
+
+<div class="bar" id="bar"></div>
+<div class="chrome on-dark" id="chrome">
+  <span class="mark">__MARKMINI__ Clínica Hyllua Husein</span>
+  <span class="count"><b id="cur">1</b> / <span id="tot">17</span></span>
+</div>
+<div class="nav on-dark" id="nav">
+  <button id="prev" aria-label="Slide anterior">←</button>
+  <button id="next" aria-label="Próximo slide">→</button>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var bar = document.getElementById('bar');
+  var chrome = document.getElementById('chrome');
+  var nav = document.getElementById('nav');
+  var cur = document.getElementById('cur');
+  document.getElementById('tot').textContent = slides.length;
+  var i = 0;
+
+  function show(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(s, k){ s.classList.toggle('on', k === i); });
+    var dark = slides[i].classList.contains('dark');
+    chrome.className = 'chrome ' + (dark ? 'on-dark' : 'on-light');
+    nav.className = 'nav ' + (dark ? 'on-dark' : 'on-light');
+    bar.style.width = ((i + 1) / slides.length * 100) + '%';
+    cur.textContent = i + 1;
+    slides[i].scrollTop = 0;
+    try{ history.replaceState(null, '', '#' + (i + 1)); }catch(e){}
+  }
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' '){ e.preventDefault(); show(i + 1); }
+    else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); show(i - 1); }
+    else if(e.key === 'Home'){ e.preventDefault(); show(0); }
+    else if(e.key === 'End'){ e.preventDefault(); show(slides.length - 1); }
+  });
+
+  document.getElementById('next').addEventListener('click', function(){ show(i + 1); });
+  document.getElementById('prev').addEventListener('click', function(){ show(i - 1); });
+
+  var x0 = null;
+  document.addEventListener('touchstart', function(e){ x0 = e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx) > 55){ show(i + (dx < 0 ? 1 : -1)); }
+    x0 = null;
+  }, {passive:true});
+
+  var start = parseInt((location.hash || '').replace('#',''), 10);
+  show(isNaN(start) ? 0 : start - 1);
+})();
+</script>

@@ -1,0 +1,1041 @@
+<title>CRM Hyllua</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+@font-face{font-family:"Scotch Text";src:url(data:font/otf;base64,__SCOTCH_ROMAN__) format("opentype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Scotch Text";src:url(data:font/otf;base64,__SCOTCH_ITALIC__) format("opentype");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Neue Montreal";src:url(data:font/ttf;base64,__NM_BOOK__) format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Neue Montreal";src:url(data:font/ttf;base64,__NM_MEDIUM__) format("truetype");font-weight:500;font-style:normal;font-display:swap}
+
+:root{
+  --verde:#353a2c;
+  --verde-2:#454b3a;
+  --creme:#f7eccd;
+  --salvia:#abb48d;
+  --terracota:#a8623f;
+  --ouro:#b89c6c;
+  --marrom:#783c18;
+
+  --ground:#faf6ea;
+  --surface:#ffffff;
+  --surface-2:#f3ecdb;
+  --line:#e2d8c0;
+  --line-2:#cfc2a4;
+  --tinta:#353a2c;
+  --tinta-2:#5c634f;
+  --tinta-3:#8b8f7d;
+
+  --ok:#4a7a5c;
+  --ok-bg:#e8f0e9;
+  --warn:#9a7420;
+  --warn-bg:#f8f0d9;
+  --bad:#a3462f;
+  --bad-bg:#f7e6e0;
+
+  --serif:"Scotch Text", Georgia, serif;
+  --sans:"Neue Montreal", "Helvetica Neue", Arial, sans-serif;
+  --r:4px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--tinta);
+  font-family:var(--sans); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--terracota); outline-offset:2px}
+
+/* ---------- header ---------- */
+header{background:var(--verde); color:var(--creme); padding:14px 0 0}
+.wrap{max-width:1240px; margin:0 auto; padding:0 clamp(14px,3vw,28px)}
+.hrow{display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding-bottom:14px}
+.brand{display:flex; align-items:center; gap:11px; margin-right:auto}
+.brand .sym{width:22px; color:var(--creme); flex:none}
+.brand .sym svg{width:100%; height:auto; display:block}
+.brand b{font-family:var(--serif); font-weight:400; font-size:19px; letter-spacing:.01em}
+.brand small{
+  display:block; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ouro); margin-top:1px;
+}
+.ctrl{display:flex; gap:8px; flex-wrap:wrap}
+.ctrl select{
+  background:var(--verde-2); border:1px solid rgba(247,236,205,.22);
+  color:var(--creme); border-radius:var(--r); padding:7px 11px; font-size:13px;
+  cursor:pointer; -webkit-appearance:none; appearance:none;
+}
+.ctrl select:hover{border-color:var(--ouro)}
+
+nav{display:flex; gap:2px; overflow-x:auto; scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{
+  background:transparent; border:0; border-bottom:2px solid transparent;
+  color:var(--salvia); padding:11px 15px; cursor:pointer;
+  font-size:13.5px; white-space:nowrap; letter-spacing:.01em;
+}
+nav button:hover{color:var(--creme)}
+nav button[aria-selected="true"]{color:var(--creme); border-bottom-color:var(--terracota)}
+
+main{padding:clamp(18px,3vw,30px) 0 100px}
+.view{display:none}
+.view.on{display:block}
+
+h1{
+  font-family:var(--serif); font-weight:400; font-size:clamp(21px,2.6vw,29px);
+  margin:0 0 3px; letter-spacing:-.005em;
+}
+.sub{color:var(--tinta-2); font-size:13.5px; margin:0 0 22px}
+h2{
+  font-family:var(--sans); font-weight:500; font-size:11px;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--ouro);
+  margin:30px 0 12px;
+}
+
+/* ---------- kpi ---------- */
+.kpis{display:grid; gap:10px; grid-template-columns:repeat(2,1fr)}
+@media (min-width:800px){ .kpis{grid-template-columns:repeat(4,1fr)} }
+.kpi{
+  background:var(--surface); border:1px solid var(--line);
+  border-top:2px solid var(--terracota); border-radius:var(--r);
+  padding:14px 15px 13px;
+}
+.kpi .k{
+  font-size:10px; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--tinta-3); margin:0 0 8px;
+}
+.kpi .v{
+  font-family:var(--serif); font-size:clamp(26px,3.4vw,36px); line-height:1;
+  margin:0 0 6px; font-variant-numeric:tabular-nums;
+}
+.kpi .d{font-size:11.5px; margin:0; display:flex; align-items:center; gap:5px}
+.kpi .d i{font-style:normal; font-variant-numeric:tabular-nums}
+.up{color:var(--ok)} .down{color:var(--bad)} .flat{color:var(--tinta-3)}
+.kpi .base{color:var(--tinta-3); font-size:11px; margin:4px 0 0}
+
+/* ---------- panels ---------- */
+.panel{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r); padding:16px 17px;
+}
+.cols{display:grid; gap:10px; grid-template-columns:1fr}
+@media (min-width:900px){ .cols.c2{grid-template-columns:1fr 1fr} }
+.panel h3{
+  font-family:var(--sans); font-weight:500; font-size:11px;
+  letter-spacing:.15em; text-transform:uppercase; color:var(--tinta-3);
+  margin:0 0 14px;
+}
+
+/* bar chart */
+.chart{display:flex; align-items:flex-end; gap:clamp(5px,1.4vw,14px); height:150px; margin-bottom:8px}
+.chart .col{flex:1; display:flex; flex-direction:column; justify-content:flex-end; height:100%; gap:5px; min-width:0}
+.chart .bar{
+  background:var(--salvia); border-radius:2px 2px 0 0; min-height:2px;
+  transition:height .4s cubic-bezier(.2,.7,.3,1);
+}
+.chart .col.now .bar{background:var(--terracota)}
+.chart .val{font-size:10px; text-align:center; color:var(--tinta-2); font-variant-numeric:tabular-nums; white-space:nowrap}
+.chartx{display:flex; gap:clamp(5px,1.4vw,14px)}
+.chartx span{
+  flex:1; text-align:center; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--tinta-3); min-width:0; overflow:hidden;
+}
+.chartx span.now{color:var(--terracota)}
+
+/* split bar */
+.split{display:flex; height:30px; border-radius:2px; overflow:hidden; margin-bottom:12px; background:var(--surface-2)}
+.split div{display:grid; place-items:center; font-size:11.5px; font-weight:500; min-width:0; overflow:hidden}
+.split .novo{background:var(--terracota); color:var(--creme)}
+.split .antigo{background:var(--verde); color:var(--creme)}
+.legend{display:flex; gap:18px; font-size:12px; color:var(--tinta-2); flex-wrap:wrap}
+.legend i{width:9px; height:9px; border-radius:2px; display:inline-block; margin-right:6px}
+
+/* ---------- table ---------- */
+.tw{overflow-x:auto; border:1px solid var(--line); border-radius:var(--r); background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:640px}
+th,td{text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:middle}
+th{
+  font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:var(--tinta-3);
+  font-weight:400; background:var(--surface-2); white-space:nowrap; position:sticky; top:0;
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+td.num,th.num{text-align:right; font-variant-numeric:tabular-nums}
+.empty{padding:34px 16px; text-align:center; color:var(--tinta-3); font-size:13.5px}
+
+/* pills */
+.pill{
+  display:inline-block; font-size:10.5px; letter-spacing:.06em; padding:3px 9px;
+  border-radius:99px; white-space:nowrap; font-weight:500;
+}
+.p-hof{background:var(--terracota); color:var(--creme)}
+.p-odo{background:var(--verde); color:var(--creme)}
+.p-ok{background:var(--ok-bg); color:var(--ok)}
+.p-warn{background:var(--warn-bg); color:var(--warn)}
+.p-bad{background:var(--bad-bg); color:var(--bad)}
+.p-mut{background:var(--surface-2); color:var(--tinta-2)}
+.stale{color:var(--warn); font-size:11px; margin-left:6px; white-space:nowrap}
+
+/* ---------- buttons ---------- */
+.btn{
+  border:1px solid var(--verde); background:var(--verde); color:var(--creme);
+  border-radius:var(--r); padding:9px 16px; cursor:pointer; font-size:13.5px;
+}
+.btn:hover{background:var(--verde-2)}
+.btn.ghost{background:transparent; color:var(--tinta); border-color:var(--line-2)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.danger{background:transparent; color:var(--bad); border-color:var(--bad)}
+.btn.danger:hover{background:var(--bad-bg)}
+.btn.sm{padding:5px 11px; font-size:12px}
+.bar-actions{display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
+.bar-actions .grow{margin-left:auto}
+.linkish{background:none; border:0; color:var(--terracota); cursor:pointer; font-size:12.5px; padding:2px 4px; text-decoration:underline}
+
+/* ---------- modal ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(53,58,44,.55);
+  display:none; align-items:flex-end; justify-content:center; z-index:40;
+}
+@media (min-width:700px){ .overlay{align-items:center} }
+.overlay.on{display:flex}
+.modal{
+  background:var(--ground); width:100%; max-width:620px; max-height:92vh; overflow-y:auto;
+  border-radius:10px 10px 0 0; padding:20px clamp(16px,3vw,26px) 24px;
+}
+@media (min-width:700px){ .modal{border-radius:6px} }
+.modal h3{font-family:var(--serif); font-weight:400; font-size:22px; margin:0 0 16px}
+.fields{display:grid; gap:12px; grid-template-columns:1fr}
+@media (min-width:560px){ .fields.two{grid-template-columns:1fr 1fr} }
+label{display:block; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--tinta-3); margin-bottom:5px}
+input,select,textarea{
+  width:100%; background:var(--surface); border:1px solid var(--line-2);
+  border-radius:var(--r); padding:9px 11px; font-size:15px;
+}
+textarea{resize:vertical; min-height:60px}
+input:focus,select:focus,textarea:focus{border-color:var(--terracota); outline:none}
+.modal .acts{display:flex; gap:9px; margin-top:20px; flex-wrap:wrap}
+.modal .acts .grow{margin-left:auto}
+.hint{font-size:11.5px; color:var(--tinta-3); margin:5px 0 0}
+.hidden{display:none !important}
+
+/* fab */
+.fab{
+  position:fixed; right:16px; bottom:16px; z-index:30;
+  border-radius:99px; padding:13px 20px; box-shadow:0 6px 20px -6px rgba(53,58,44,.5);
+  border:0; background:var(--terracota); color:var(--creme); cursor:pointer; font-size:14px;
+}
+.fab:hover{background:var(--marrom)}
+
+.note{
+  border-left:2px solid var(--ouro); background:var(--surface-2);
+  padding:11px 14px; font-size:12.5px; color:var(--tinta-2); border-radius:0 var(--r) var(--r) 0;
+  margin:0 0 18px;
+}
+.note b{color:var(--marrom); font-weight:500}
+footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="hrow">
+      <div class="brand">
+        <span class="sym">__SYMBOL__</span>
+        <span><b>Clínica Hyllua Husein</b><small>CRM Comercial · Protótipo</small></span>
+      </div>
+      <div class="ctrl">
+        <select id="fMes" aria-label="Mês de referência"></select>
+        <select id="fEsp" aria-label="Especialidade">
+          <option value="">Todas as especialidades</option>
+          <option value="HOF">HOF</option>
+          <option value="Odontológico">Odontológico</option>
+        </select>
+      </div>
+    </div>
+    <nav id="tabs" role="tablist">
+      <button role="tab" data-v="inicio" aria-selected="true">Início</button>
+      <button role="tab" data-v="abordagens" aria-selected="false">Abordagens</button>
+      <button role="tab" data-v="negociacoes" aria-selected="false">Negociações</button>
+      <button role="tab" data-v="ajustes" aria-selected="false">Ajustes</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ================= INÍCIO ================= -->
+  <section class="view on" id="v-inicio">
+    <h1 id="dashTitle">Painel</h1>
+    <p class="sub" id="dashSub"></p>
+
+    <div class="kpis" id="kpis"></div>
+
+    <h2>Evolução mês a mês</h2>
+    <div class="cols c2">
+      <div class="panel">
+        <h3>Faturamento fechado</h3>
+        <div class="chart" id="chFat"></div>
+        <div class="chartx" id="chFatX"></div>
+      </div>
+      <div class="panel">
+        <h3>Conversão de procedimentos</h3>
+        <div class="chart" id="chConv"></div>
+        <div class="chartx" id="chConvX"></div>
+      </div>
+    </div>
+
+    <h2>Origem dos agendamentos</h2>
+    <div class="cols c2">
+      <div class="panel">
+        <h3>Paciente novo × antigo</h3>
+        <div class="split" id="splitNA"></div>
+        <div class="legend">
+          <span><i style="background:var(--terracota)"></i><b id="lgNovo">0</b> novos</span>
+          <span><i style="background:var(--verde)"></i><b id="lgAntigo">0</b> antigos</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Por canal de origem</h3>
+        <div id="porCanal"></div>
+      </div>
+    </div>
+
+    <h2>Detalhamento de faturamento</h2>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>Procedimento</th><th>Tecnologia</th><th>Esp.</th>
+          <th class="num">Ofertados</th><th class="num">Fechados</th>
+          <th class="num">Faturamento</th><th class="num">Ticket médio</th><th class="num">% do total</th>
+        </tr></thead>
+        <tbody id="tDetalhe"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= ABORDAGENS ================= -->
+  <section class="view" id="v-abordagens">
+    <h1>Abordagens</h1>
+    <p class="sub">Todo contato recebido — mesmo o que não vira consulta. É o denominador da conversão de consultas.</p>
+    <div class="bar-actions">
+      <button class="btn" onclick="abrirAbordagem()">+ Nova abordagem</button>
+      <span class="grow" id="cntAb"></span>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>Data</th><th>Paciente</th><th>Esp.</th><th>Tipo</th><th>Origem</th>
+          <th>Agendou</th><th>Compareceu</th><th>Atendente</th><th></th>
+        </tr></thead>
+        <tbody id="tAbordagens"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= NEGOCIAÇÕES ================= -->
+  <section class="view" id="v-negociacoes">
+    <h1>Negociações</h1>
+    <p class="sub">Toda oferta de procedimento — mesmo a que não fecha. Um paciente pode ter várias linhas.</p>
+    <div class="bar-actions">
+      <button class="btn" onclick="abrirNegociacao()">+ Nova oferta</button>
+      <span class="grow" id="cntNeg"></span>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>Data</th><th>Paciente</th><th>Procedimento</th><th>Esp.</th>
+          <th class="num">Ofertado</th><th>Status</th><th class="num">Fechado</th>
+          <th>Motivo / Atendente</th><th></th>
+        </tr></thead>
+        <tbody id="tNegociacoes"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= AJUSTES ================= -->
+  <section class="view" id="v-ajustes">
+    <h1>Ajustes</h1>
+    <p class="sub">Listas que alimentam os formulários e os relatórios.</p>
+
+    <p class="note"><b>Protótipo.</b> Os dados ficam salvos apenas neste navegador. Na versão final vão para o banco (Supabase), com login por perfil — Gestão e Agente.</p>
+
+    <h2>Catálogo de procedimentos</h2>
+    <div class="bar-actions"><button class="btn ghost sm" onclick="abrirProcedimento()">+ Novo procedimento</button></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Procedimento</th><th>Tecnologia</th><th>Especialidade</th><th class="num">Valor de tabela</th><th></th></tr></thead>
+        <tbody id="tProcedimentos"></tbody>
+      </table>
+    </div>
+
+    <h2>Canais de origem</h2>
+    <div class="panel">
+      <div id="listaOrigens" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="novaOrigem" placeholder="Novo canal" style="max-width:240px">
+        <button class="btn ghost sm" onclick="addOrigem()">Adicionar</button>
+      </div>
+      <p class="hint">Lista fechada de propósito: em texto livre, “Instagram”, “instagram” e “IG” viram três canais e o relatório de origem se perde.</p>
+    </div>
+
+    <h2>Atendentes</h2>
+    <div class="panel">
+      <div id="listaAtendentes" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="novoAtendente" placeholder="Nome" style="max-width:240px">
+        <button class="btn ghost sm" onclick="addAtendente()">Adicionar</button>
+      </div>
+    </div>
+
+    <h2>Dados</h2>
+    <div class="panel">
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn ghost sm" onclick="exportar()">Exportar backup (JSON)</button>
+        <button class="btn ghost sm" onclick="document.getElementById('imp').click()">Importar backup</button>
+        <button class="btn ghost sm" onclick="semear(true)">Recarregar dados de exemplo</button>
+        <button class="btn danger sm" onclick="limpar()">Apagar tudo</button>
+      </div>
+      <input type="file" id="imp" accept="application/json" class="hidden" onchange="importar(this)">
+      <p class="hint">O backup baixa um arquivo com tudo que está lançado. Serve para levar os dados adiante quando o sistema for para o banco.</p>
+    </div>
+  </section>
+
+  <footer>Protótipo do CRM Comercial · Clínica Hyllua Husein · dados de demonstração</footer>
+</main>
+
+<button class="fab" id="fab" onclick="fabAction()">+</button>
+
+<!-- ============ MODAL ============ -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)fecharModal()">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="mTitulo"></h3>
+    <div id="mCorpo"></div>
+    <div class="acts">
+      <button class="btn" id="mSalvar">Salvar</button>
+      <button class="btn ghost" onclick="fecharModal()">Cancelar</button>
+      <button class="btn danger grow hidden" id="mExcluir">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+var KEY = 'crm-hyllua-clinica-v1';
+var ESP = ['HOF','Odontológico'];
+var STATUS = ['Fechado','Perdido','Em negociação'];
+var MOTIVOS = ['Preço','Sem retorno','Escolheu concorrente','Adiou decisão','Medo/insegurança','Indisponibilidade de agenda','Outro'];
+var MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+var CORTE_NEGOCIACAO = 30; // dias sem movimento até a oferta ser considerada parada
+var db, filtroMes, filtroEsp = '';
+
+/* ---------- utilidades ---------- */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function hoje(){ return new Date().toISOString().slice(0,10); }
+function mesDe(d){ return (d||'').slice(0,7); }
+function rotuloMes(m){ var p = m.split('-'); return MESES[+p[1]-1] + '/' + p[0].slice(2); }
+function brl(v){ return (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
+function pct(v){ return (v*100).toFixed(1).replace('.',',') + '%'; }
+function dataBR(d){ if(!d) return '—'; var p = d.split('-'); return p[2]+'/'+p[1]; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function dias(d){ return Math.floor((Date.now() - new Date(d+'T12:00:00').getTime()) / 86400000); }
+function pillEsp(e){ return '<span class="pill ' + (e==='HOF'?'p-hof':'p-odo') + '">' + (e==='HOF'?'HOF':'Odonto') + '</span>'; }
+
+/* ---------- persistência ---------- */
+function salvar(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){} }
+function carregar(){
+  try{ var raw = localStorage.getItem(KEY); if(raw){ db = JSON.parse(raw); return true; } }catch(e){}
+  return false;
+}
+
+/* ---------- dados de exemplo ---------- */
+function semear(forcar){
+  if(!forcar && carregar()){ return; }
+  var procs = [
+    {nome:'Preenchimento Labial', tecnologia:'Ácido Hialurônico', especialidade:'HOF', valor:2200},
+    {nome:'Toxina Botulínica', tecnologia:'Botox', especialidade:'HOF', valor:1500},
+    {nome:'Bioestimulador', tecnologia:'Sculptra / Radiesse', especialidade:'HOF', valor:3200},
+    {nome:'Fios de Sustentação', tecnologia:'PDO', especialidade:'HOF', valor:4200},
+    {nome:'Clareamento Dental', tecnologia:'Laser', especialidade:'Odontológico', valor:900},
+    {nome:'Implante Dentário', tecnologia:'Implante', especialidade:'Odontológico', valor:4500},
+    {nome:'Facetas / Lentes de Contato', tecnologia:'Cerâmica', especialidade:'Odontológico', valor:9800}
+  ].map(function(p){ p.id = uid(); p.ativo = true; return p; });
+
+  db = {
+    procedimentos: procs,
+    origens: ['WhatsApp','Instagram','Indicação','Google','Tráfego pago','Presencial','Retorno de paciente'],
+    atendentes: ['Brenda','Camila','Bruna'],
+    abordagens: [],
+    negociacoes: []
+  };
+
+  var nomes = ['Ana Paula Souza','Ricardo Melo','Fernanda Lima','Juliana Prado','Marcos Vieira','Carla Bastos','Patrícia Nunes','Rodrigo Alves','Beatriz Campos','Letícia Moraes','Vanessa Duarte','Thiago Ramos','Sofia Andrade','Renata Pires','Gustavo Faria','Mariana Rocha','Débora Cruz','Felipe Tavares','Camila Reis','Luana Freitas','Bruno Sales','Aline Cardoso','Paula Menezes','Diego Barros'];
+  var pesoOrigem = ['WhatsApp','WhatsApp','WhatsApp','WhatsApp','WhatsApp','Instagram','Instagram','Indicação','Google','Tráfego pago','Presencial','Retorno de paciente'];
+  var seed = 7;
+  function rnd(){ seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+  function pick(a){ return a[Math.floor(rnd() * a.length)]; }
+
+  var base = new Date(); base.setDate(1);
+  for(var back = 5; back >= 0; back--){
+    var d = new Date(base.getFullYear(), base.getMonth() - back, 1);
+    var ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    var maxDia = (back === 0) ? Math.min(new Date().getDate(), 28) : 28;
+    var qtd = 14 + Math.floor(rnd() * 8) + (5 - back);          // volume cresce com o tempo
+    var taxaAgenda = 0.52 + (5 - back) * 0.035;                  // conversão melhorando
+
+    for(var i = 0; i < qtd; i++){
+      var dia = 1 + Math.floor(rnd() * maxDia);
+      var data = ym + '-' + String(dia).padStart(2,'0');
+      var esp = rnd() < 0.62 ? 'HOF' : 'Odontológico';
+      var paciente = pick(nomes);
+      var agendou = rnd() < taxaAgenda;
+      var compareceu = agendou ? (rnd() < 0.84) : false;
+      var dConsulta = '';
+      if(agendou){
+        var dc = Math.min(dia + 1 + Math.floor(rnd() * 6), 28);
+        dConsulta = ym + '-' + String(dc).padStart(2,'0');
+      }
+      db.abordagens.push({
+        id: uid(), data: data, especialidade: esp, paciente: paciente,
+        tipo: rnd() < 0.63 ? 'Novo' : 'Antigo',
+        origem: pick(pesoOrigem),
+        agendou: agendou ? 'Sim' : 'Não',
+        dataConsulta: dConsulta,
+        compareceu: agendou ? (compareceu ? 'Sim' : 'Não') : '',
+        atendente: pick(db.atendentes),
+        obs: ''
+      });
+
+      // quem compareceu recebe de 1 a 3 ofertas
+      if(compareceu){
+        var nOf = 1 + Math.floor(rnd() * 3);
+        for(var j = 0; j < nOf; j++){
+          var cands = procs.filter(function(p){ return p.especialidade === esp; });
+          var proc = cands[Math.floor(rnd() * cands.length)];
+          var r = rnd();
+          var st = r < (0.42 + (5 - back) * 0.02) ? 'Fechado' : (r < 0.86 ? 'Perdido' : 'Em negociação');
+          var ofertado = Math.round(proc.valor * (0.9 + rnd() * 0.3) / 50) * 50;
+          db.negociacoes.push({
+            id: uid(),
+            data: dConsulta || data,
+            especialidade: esp,
+            paciente: paciente,
+            procedimentoId: proc.id,
+            valorOfertado: ofertado,
+            status: st,
+            valorFechado: st === 'Fechado' ? Math.round(ofertado * (0.85 + rnd() * 0.15) / 50) * 50 : 0,
+            motivoPerda: st === 'Perdido' ? pick(MOTIVOS) : '',
+            atendente: pick(db.atendentes)
+          });
+        }
+      }
+    }
+  }
+  salvar();
+}
+
+/* ---------- cálculo das métricas ---------- */
+function mesesComDados(){
+  var s = {};
+  db.abordagens.forEach(function(a){ s[mesDe(a.data)] = 1; });
+  db.negociacoes.forEach(function(n){ s[mesDe(n.data)] = 1; });
+  var l = Object.keys(s).sort();
+  if(!l.length) l = [hoje().slice(0,7)];
+  return l;
+}
+function filtraEsp(arr){
+  return filtroEsp ? arr.filter(function(x){ return x.especialidade === filtroEsp; }) : arr;
+}
+function metricas(mes){
+  var ab = filtraEsp(db.abordagens).filter(function(a){ return mesDe(a.data) === mes; });
+  var ng = filtraEsp(db.negociacoes).filter(function(n){ return mesDe(n.data) === mes; });
+
+  var agendadas = ab.filter(function(a){ return a.agendou === 'Sim'; });
+  var compareceram = agendadas.filter(function(a){ return a.compareceu === 'Sim'; });
+  var fechados = ng.filter(function(n){ return n.status === 'Fechado'; });
+  var perdidos = ng.filter(function(n){ return n.status === 'Perdido'; });
+  var decididos = fechados.length + perdidos.length;
+  var faturamento = fechados.reduce(function(s,n){ return s + (+n.valorFechado || 0); }, 0);
+
+  return {
+    mes: mes,
+    abordagens: ab.length,
+    agendadas: agendadas.length,
+    compareceram: compareceram.length,
+    convConsulta: ab.length ? agendadas.length / ab.length : 0,
+    comparecimento: agendadas.length ? compareceram.length / agendadas.length : 0,
+    ofertados: ng.length,
+    fechados: fechados.length,
+    perdidos: perdidos.length,
+    emNegociacao: ng.length - decididos,
+    convProc: decididos ? fechados.length / decididos : 0,
+    ticket: fechados.length ? faturamento / fechados.length : 0,
+    faturamento: faturamento,
+    novos: ab.filter(function(a){ return a.tipo === 'Novo'; }).length,
+    antigos: ab.filter(function(a){ return a.tipo === 'Antigo'; }).length,
+    canais: ab.reduce(function(m,a){ m[a.origem] = (m[a.origem]||0) + 1; return m; }, {})
+  };
+}
+function mesAnterior(m){
+  var p = m.split('-'), d = new Date(+p[0], +p[1] - 2, 1);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+}
+
+/* ---------- render: dashboard ---------- */
+function delta(atual, anterior, formatar, inverter){
+  if(anterior == null || anterior === 0){ return '<p class="base">sem base de comparação</p>'; }
+  var dif = atual - anterior;
+  var cls = Math.abs(dif) < 1e-9 ? 'flat' : ((dif > 0) !== !!inverter ? 'up' : 'down');
+  var sinal = dif > 0 ? '▲' : (dif < 0 ? '▼' : '—');
+  return '<p class="d ' + cls + '">' + sinal + ' <i>' + formatar(Math.abs(dif)) + '</i>'
+       + '<span class="flat" style="color:var(--tinta-3)">vs. mês anterior</span></p>';
+}
+function renderKpis(){
+  var m = metricas(filtroMes), a = metricas(mesAnterior(filtroMes));
+  var teveAnterior = a.abordagens || a.ofertados;
+  var cards = [
+    { k:'Conversão de consultas', v:pct(m.convConsulta),
+      base:m.agendadas + ' de ' + m.abordagens + ' abordagens',
+      d: teveAnterior ? delta(m.convConsulta, a.convConsulta, pct) : '' },
+    { k:'Conversão de procedimentos', v:pct(m.convProc),
+      base:m.fechados + ' de ' + (m.fechados + m.perdidos) + ' decididos',
+      d: teveAnterior ? delta(m.convProc, a.convProc, pct) : '' },
+    { k:'Ticket médio', v:brl(m.ticket),
+      base:m.fechados + ' procedimento' + (m.fechados===1?'':'s') + ' vendido' + (m.fechados===1?'':'s'),
+      d: teveAnterior ? delta(m.ticket, a.ticket, brl) : '' },
+    { k:'Faturamento', v:brl(m.faturamento),
+      base:'fechado no mês',
+      d: teveAnterior ? delta(m.faturamento, a.faturamento, brl) : '' }
+  ];
+  document.getElementById('kpis').innerHTML = cards.map(function(c){
+    return '<div class="kpi"><p class="k">' + c.k + '</p><p class="v">' + c.v + '</p>'
+         + (c.d || '') + '<p class="base">' + c.base + '</p></div>';
+  }).join('');
+
+  document.getElementById('dashTitle').textContent = 'Painel de ' + rotuloMes(filtroMes).replace('/', ' de 20');
+  document.getElementById('dashSub').innerHTML =
+    m.abordagens + ' abordagens · ' + m.agendadas + ' agendadas · ' + m.compareceram + ' compareceram · '
+    + m.ofertados + ' procedimentos ofertados'
+    + (m.emNegociacao ? ' · <span class="stale">' + m.emNegociacao + ' ainda em negociação, fora da conta</span>' : '')
+    + (filtroEsp ? ' · filtrado por ' + filtroEsp : '');
+}
+function renderGraficos(){
+  var todos = mesesComDados();
+  var i = todos.indexOf(filtroMes);
+  var janela = todos.slice(Math.max(0, i - 5), i + 1);
+  var dados = janela.map(function(m){ return metricas(m); });
+
+  function barras(elBar, elX, valores, fmt){
+    var max = Math.max.apply(null, valores.map(function(v){ return v.valor; }).concat([1]));
+    document.getElementById(elBar).innerHTML = valores.map(function(v){
+      var h = Math.max(2, Math.round(v.valor / max * 100));
+      return '<div class="col' + (v.agora ? ' now' : '') + '">'
+           + '<span class="val">' + fmt(v.valor) + '</span>'
+           + '<div class="bar" style="height:' + h + '%"></div></div>';
+    }).join('');
+    document.getElementById(elX).innerHTML = valores.map(function(v){
+      return '<span' + (v.agora ? ' class="now"' : '') + '>' + rotuloMes(v.mes) + '</span>';
+    }).join('');
+  }
+  barras('chFat','chFatX', dados.map(function(d){
+    return { mes:d.mes, valor:d.faturamento, agora:d.mes === filtroMes };
+  }), function(v){ return v >= 1000 ? (v/1000).toFixed(0) + 'k' : String(v); });
+
+  barras('chConv','chConvX', dados.map(function(d){
+    return { mes:d.mes, valor:d.convProc, agora:d.mes === filtroMes };
+  }), function(v){ return (v*100).toFixed(0) + '%'; });
+}
+function renderOrigem(){
+  var m = metricas(filtroMes);
+  var tot = m.novos + m.antigos;
+  var sp = document.getElementById('splitNA');
+  if(!tot){
+    sp.innerHTML = '<div style="flex:1;color:var(--tinta-3);font-size:12px">sem abordagens no mês</div>';
+  } else {
+    sp.innerHTML = '<div class="novo" style="flex:' + m.novos + '">' + (m.novos ? pct(m.novos/tot) : '') + '</div>'
+                 + '<div class="antigo" style="flex:' + m.antigos + '">' + (m.antigos ? pct(m.antigos/tot) : '') + '</div>';
+  }
+  document.getElementById('lgNovo').textContent = m.novos;
+  document.getElementById('lgAntigo').textContent = m.antigos;
+
+  var pares = Object.keys(m.canais).map(function(k){ return [k, m.canais[k]]; })
+                    .sort(function(a,b){ return b[1] - a[1]; });
+  var maxC = pares.length ? pares[0][1] : 1;
+  document.getElementById('porCanal').innerHTML = pares.length ? pares.map(function(p){
+    return '<div style="display:grid;grid-template-columns:120px 1fr 34px;gap:10px;align-items:center;margin-bottom:7px">'
+         + '<span style="font-size:12.5px">' + esc(p[0]) + '</span>'
+         + '<span style="background:var(--surface-2);border-radius:2px;height:8px;overflow:hidden">'
+         + '<span style="display:block;height:100%;width:' + (p[1]/maxC*100) + '%;background:var(--ouro)"></span></span>'
+         + '<span style="font-size:12px;text-align:right;font-variant-numeric:tabular-nums">' + p[1] + '</span></div>';
+  }).join('') : '<p style="color:var(--tinta-3);font-size:12.5px;margin:0">Sem abordagens no mês.</p>';
+}
+function renderDetalhe(){
+  var ng = filtraEsp(db.negociacoes).filter(function(n){ return mesDe(n.data) === filtroMes; });
+  var totalFat = ng.filter(function(n){ return n.status === 'Fechado'; })
+                   .reduce(function(s,n){ return s + (+n.valorFechado||0); }, 0);
+  var linhas = db.procedimentos.map(function(p){
+    var doProc = ng.filter(function(n){ return n.procedimentoId === p.id; });
+    var fech = doProc.filter(function(n){ return n.status === 'Fechado'; });
+    var fat = fech.reduce(function(s,n){ return s + (+n.valorFechado||0); }, 0);
+    return { p:p, ofertados:doProc.length, fechados:fech.length, fat:fat,
+             ticket: fech.length ? fat/fech.length : 0,
+             share: totalFat ? fat/totalFat : 0 };
+  }).filter(function(l){ return l.ofertados > 0; })
+    .sort(function(a,b){ return b.fat - a.fat; });
+
+  var tb = document.getElementById('tDetalhe');
+  if(!linhas.length){ tb.innerHTML = '<tr><td colspan="8" class="empty">Nenhuma oferta registrada neste mês.</td></tr>'; return; }
+  tb.innerHTML = linhas.map(function(l){
+    return '<tr><td>' + esc(l.p.nome) + '</td><td>' + esc(l.p.tecnologia) + '</td>'
+         + '<td>' + pillEsp(l.p.especialidade) + '</td>'
+         + '<td class="num">' + l.ofertados + '</td><td class="num">' + l.fechados + '</td>'
+         + '<td class="num">' + brl(l.fat) + '</td><td class="num">' + (l.fechados ? brl(l.ticket) : '—') + '</td>'
+         + '<td class="num">' + (l.share ? pct(l.share) : '—') + '</td></tr>';
+  }).join('') + '<tr style="background:var(--surface-2)"><td colspan="5"><b>Total</b></td>'
+    + '<td class="num"><b>' + brl(totalFat) + '</b></td><td colspan="2"></td></tr>';
+}
+
+/* ---------- render: listas ---------- */
+function renderAbordagens(){
+  var lista = filtraEsp(db.abordagens).filter(function(a){ return mesDe(a.data) === filtroMes; })
+                .sort(function(a,b){ return b.data.localeCompare(a.data); });
+  document.getElementById('cntAb').innerHTML = '<span style="font-size:12.5px;color:var(--tinta-3)">'
+    + lista.length + ' em ' + rotuloMes(filtroMes) + '</span>';
+  var tb = document.getElementById('tAbordagens');
+  if(!lista.length){ tb.innerHTML = '<tr><td colspan="9" class="empty">Nenhuma abordagem neste mês. Use “Nova abordagem”.</td></tr>'; return; }
+  tb.innerHTML = lista.map(function(a){
+    var ag = a.agendou === 'Sim'
+      ? '<span class="pill p-ok">Sim · ' + dataBR(a.dataConsulta) + '</span>'
+      : '<span class="pill p-mut">Não</span>';
+    var cp = a.agendou !== 'Sim' ? '<span style="color:var(--tinta-3)">—</span>'
+           : (a.compareceu === 'Sim' ? '<span class="pill p-ok">Sim</span>'
+           : (a.compareceu === 'Não' ? '<span class="pill p-bad">No-show</span>' : '<span class="pill p-warn">A confirmar</span>'));
+    return '<tr><td>' + dataBR(a.data) + '</td><td>' + esc(a.paciente) + '</td>'
+         + '<td>' + pillEsp(a.especialidade) + '</td>'
+         + '<td>' + esc(a.tipo) + '</td><td>' + esc(a.origem) + '</td>'
+         + '<td>' + ag + '</td><td>' + cp + '</td><td>' + esc(a.atendente) + '</td>'
+         + '<td><button class="linkish" onclick="abrirAbordagem(\'' + a.id + '\')">editar</button></td></tr>';
+  }).join('');
+}
+function nomeProc(id){
+  var p = db.procedimentos.filter(function(x){ return x.id === id; })[0];
+  return p ? p.nome : '—';
+}
+function renderNegociacoes(){
+  var lista = filtraEsp(db.negociacoes).filter(function(n){ return mesDe(n.data) === filtroMes; })
+                .sort(function(a,b){ return b.data.localeCompare(a.data); });
+  document.getElementById('cntNeg').innerHTML = '<span style="font-size:12.5px;color:var(--tinta-3)">'
+    + lista.length + ' em ' + rotuloMes(filtroMes) + '</span>';
+  var tb = document.getElementById('tNegociacoes');
+  if(!lista.length){ tb.innerHTML = '<tr><td colspan="9" class="empty">Nenhuma oferta neste mês. Use “Nova oferta”.</td></tr>'; return; }
+  tb.innerHTML = lista.map(function(n){
+    var cls = n.status === 'Fechado' ? 'p-ok' : (n.status === 'Perdido' ? 'p-bad' : 'p-warn');
+    var parada = '';
+    if(n.status === 'Em negociação'){
+      var d = dias(n.data);
+      if(d > CORTE_NEGOCIACAO) parada = '<span class="stale">parada há ' + d + 'd</span>';
+    }
+    var extra = n.status === 'Perdido' && n.motivoPerda
+      ? esc(n.motivoPerda) + ' · ' + esc(n.atendente) : esc(n.atendente);
+    return '<tr><td>' + dataBR(n.data) + '</td><td>' + esc(n.paciente) + '</td>'
+         + '<td>' + esc(nomeProc(n.procedimentoId)) + '</td>'
+         + '<td>' + pillEsp(n.especialidade) + '</td>'
+         + '<td class="num">' + brl(n.valorOfertado) + '</td>'
+         + '<td><span class="pill ' + cls + '">' + esc(n.status) + '</span>' + parada + '</td>'
+         + '<td class="num">' + (n.status === 'Fechado' ? brl(n.valorFechado) : '—') + '</td>'
+         + '<td style="font-size:12.5px;color:var(--tinta-2)">' + extra + '</td>'
+         + '<td><button class="linkish" onclick="abrirNegociacao(\'' + n.id + '\')">editar</button></td></tr>';
+  }).join('');
+}
+function renderAjustes(){
+  document.getElementById('tProcedimentos').innerHTML = db.procedimentos.map(function(p){
+    return '<tr><td>' + esc(p.nome) + '</td><td>' + esc(p.tecnologia) + '</td>'
+         + '<td>' + pillEsp(p.especialidade) + '</td>'
+         + '<td class="num">' + brl(p.valor) + '</td>'
+         + '<td><button class="linkish" onclick="abrirProcedimento(\'' + p.id + '\')">editar</button></td></tr>';
+  }).join('') || '<tr><td colspan="5" class="empty">Nenhum procedimento cadastrado.</td></tr>';
+
+  document.getElementById('listaOrigens').innerHTML = db.origens.map(function(o,i){
+    return '<span class="pill p-mut">' + esc(o)
+         + ' <button class="linkish" style="padding:0 0 0 5px;text-decoration:none" onclick="delOrigem(' + i + ')" aria-label="Remover">×</button></span>';
+  }).join('') || '<span style="color:var(--tinta-3);font-size:12.5px">Nenhum canal.</span>';
+
+  document.getElementById('listaAtendentes').innerHTML = db.atendentes.map(function(a,i){
+    return '<span class="pill p-mut">' + esc(a)
+         + ' <button class="linkish" style="padding:0 0 0 5px;text-decoration:none" onclick="delAtendente(' + i + ')" aria-label="Remover">×</button></span>';
+  }).join('') || '<span style="color:var(--tinta-3);font-size:12.5px">Nenhum atendente.</span>';
+}
+
+function render(){
+  renderKpis(); renderGraficos(); renderOrigem(); renderDetalhe();
+  renderAbordagens(); renderNegociacoes(); renderAjustes();
+}
+
+/* ---------- modal ---------- */
+var salvarHandler = null;
+function fecharModal(){ document.getElementById('overlay').classList.remove('on'); }
+function abrirModal(titulo, html, onSalvar, onExcluir){
+  document.getElementById('mTitulo').textContent = titulo;
+  document.getElementById('mCorpo').innerHTML = html;
+  var bx = document.getElementById('mExcluir');
+  bx.classList.toggle('hidden', !onExcluir);
+  bx.onclick = onExcluir || null;
+  salvarHandler = onSalvar;
+  document.getElementById('overlay').classList.add('on');
+  var f = document.querySelector('#mCorpo input, #mCorpo select');
+  if(f) setTimeout(function(){ f.focus(); }, 40);
+}
+document.getElementById('mSalvar').onclick = function(){ if(salvarHandler) salvarHandler(); };
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') fecharModal(); });
+function val(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function opcoes(lista, sel){
+  return lista.map(function(o){
+    var v = typeof o === 'string' ? o : o.v, t = typeof o === 'string' ? o : o.t;
+    return '<option value="' + esc(v) + '"' + (v === sel ? ' selected' : '') + '>' + esc(t) + '</option>';
+  }).join('');
+}
+function campo(label, inner, dica){
+  return '<div><label>' + label + '</label>' + inner + (dica ? '<p class="hint">' + dica + '</p>' : '') + '</div>';
+}
+
+/* ---------- formulário: abordagem ---------- */
+function abrirAbordagem(id){
+  var a = id ? db.abordagens.filter(function(x){ return x.id === id; })[0] : null;
+  var d = a || { data:hoje(), especialidade:'HOF', paciente:'', tipo:'Novo',
+                 origem:db.origens[0]||'', agendou:'Não', dataConsulta:'', compareceu:'', atendente:db.atendentes[0]||'', obs:'' };
+  var html = '<div class="fields two">'
+    + campo('Paciente', '<input id="f_pac" value="' + esc(d.paciente) + '" placeholder="Nome">')
+    + campo('Data do contato', '<input type="date" id="f_data" value="' + esc(d.data) + '">')
+    + campo('Especialidade', '<select id="f_esp">' + opcoes(ESP, d.especialidade) + '</select>')
+    + campo('Tipo de paciente', '<select id="f_tipo">' + opcoes(['Novo','Antigo'], d.tipo) + '</select>')
+    + campo('Canal de origem', '<select id="f_org">' + opcoes(db.origens, d.origem) + '</select>')
+    + campo('Atendente', '<select id="f_at">' + opcoes(db.atendentes, d.atendente) + '</select>')
+    + campo('Agendou consulta?', '<select id="f_ag" onchange="toggleAgenda()">' + opcoes(['Não','Sim'], d.agendou) + '</select>')
+    + campo('Data da consulta', '<input type="date" id="f_dc" value="' + esc(d.dataConsulta) + '">')
+    + campo('Compareceu?', '<select id="f_cp">' + opcoes([{v:'',t:'A confirmar'},{v:'Sim',t:'Sim'},{v:'Não',t:'Não — no-show'}], d.compareceu) + '</select>',
+            'Campo sugerido por nós: separa “não vendeu” de “nem foi atendido”.')
+    + '</div>'
+    + '<div style="margin-top:12px">' + campo('Observações', '<textarea id="f_obs">' + esc(d.obs) + '</textarea>') + '</div>';
+
+  abrirModal(a ? 'Editar abordagem' : 'Nova abordagem', html, function(){
+    var pac = val('f_pac');
+    if(!pac){ alert('Informe o nome do paciente.'); return; }
+    var reg = {
+      id: a ? a.id : uid(),
+      data: val('f_data') || hoje(),
+      especialidade: val('f_esp'), paciente: pac, tipo: val('f_tipo'),
+      origem: val('f_org'), agendou: val('f_ag'),
+      dataConsulta: val('f_ag') === 'Sim' ? val('f_dc') : '',
+      compareceu: val('f_ag') === 'Sim' ? val('f_cp') : '',
+      atendente: val('f_at'), obs: val('f_obs')
+    };
+    if(a){ db.abordagens[db.abordagens.indexOf(a)] = reg; } else { db.abordagens.push(reg); }
+    salvar(); irParaMes(mesDe(reg.data)); fecharModal();
+  }, a ? function(){
+    if(!confirm('Excluir esta abordagem?')) return;
+    db.abordagens.splice(db.abordagens.indexOf(a), 1);
+    salvar(); montarMeses(); render(); fecharModal();
+  } : null);
+  toggleAgenda();
+}
+function toggleAgenda(){
+  var ag = document.getElementById('f_ag');
+  if(!ag) return;
+  var on = ag.value === 'Sim';
+  ['f_dc','f_cp'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.disabled = !on; el.parentNode.style.opacity = on ? '1' : '.45'; }
+  });
+}
+
+/* ---------- formulário: negociação ---------- */
+function abrirNegociacao(id){
+  var n = id ? db.negociacoes.filter(function(x){ return x.id === id; })[0] : null;
+  var d = n || { data:hoje(), especialidade:'HOF', paciente:'', procedimentoId:'',
+                 valorOfertado:'', status:'Em negociação', valorFechado:'', motivoPerda:'', atendente:db.atendentes[0]||'' };
+  var procOpts = db.procedimentos.map(function(p){
+    return { v:p.id, t:p.nome + ' · ' + p.tecnologia };
+  });
+  var html = '<div class="fields two">'
+    + campo('Paciente', '<input id="f_pac" value="' + esc(d.paciente) + '" placeholder="Nome">')
+    + campo('Data da oferta', '<input type="date" id="f_data" value="' + esc(d.data) + '">')
+    + campo('Procedimento ofertado', '<select id="f_proc" onchange="autoPreco()">' + opcoes(procOpts, d.procedimentoId) + '</select>')
+    + campo('Especialidade', '<select id="f_esp">' + opcoes(ESP, d.especialidade) + '</select>')
+    + campo('Valor ofertado (R$)', '<input type="number" id="f_vo" min="0" step="50" value="' + esc(d.valorOfertado) + '">')
+    + campo('Atendente', '<select id="f_at">' + opcoes(db.atendentes, d.atendente) + '</select>')
+    + campo('Status', '<select id="f_st" onchange="toggleStatus()">' + opcoes(STATUS, d.status) + '</select>',
+            '“Em negociação” fica fora do cálculo da conversão.')
+    + campo('Valor fechado (R$)', '<input type="number" id="f_vf" min="0" step="50" value="' + esc(d.valorFechado) + '">')
+    + campo('Motivo da perda', '<select id="f_mp">' + opcoes([{v:'',t:'—'}].concat(MOTIVOS), d.motivoPerda) + '</select>')
+    + '</div>';
+
+  abrirModal(n ? 'Editar oferta' : 'Nova oferta de procedimento', html, function(){
+    var pac = val('f_pac');
+    if(!pac){ alert('Informe o nome do paciente.'); return; }
+    if(!val('f_proc')){ alert('Selecione o procedimento ofertado.'); return; }
+    var st = val('f_st');
+    var reg = {
+      id: n ? n.id : uid(),
+      data: val('f_data') || hoje(),
+      especialidade: val('f_esp'), paciente: pac,
+      procedimentoId: val('f_proc'),
+      valorOfertado: +val('f_vo') || 0,
+      status: st,
+      valorFechado: st === 'Fechado' ? (+val('f_vf') || +val('f_vo') || 0) : 0,
+      motivoPerda: st === 'Perdido' ? val('f_mp') : '',
+      atendente: val('f_at')
+    };
+    if(n){ db.negociacoes[db.negociacoes.indexOf(n)] = reg; } else { db.negociacoes.push(reg); }
+    salvar(); irParaMes(mesDe(reg.data)); fecharModal();
+  }, n ? function(){
+    if(!confirm('Excluir esta oferta?')) return;
+    db.negociacoes.splice(db.negociacoes.indexOf(n), 1);
+    salvar(); montarMeses(); render(); fecharModal();
+  } : null);
+  toggleStatus();
+}
+function autoPreco(){
+  var sel = document.getElementById('f_proc'), vo = document.getElementById('f_vo'), esp = document.getElementById('f_esp');
+  if(!sel || !vo) return;
+  var p = db.procedimentos.filter(function(x){ return x.id === sel.value; })[0];
+  if(!p) return;
+  if(!vo.value) vo.value = p.valor;
+  if(esp) esp.value = p.especialidade;
+}
+function toggleStatus(){
+  var st = document.getElementById('f_st');
+  if(!st) return;
+  var vf = document.getElementById('f_vf'), mp = document.getElementById('f_mp');
+  if(vf){ var on = st.value === 'Fechado'; vf.disabled = !on; vf.parentNode.style.opacity = on ? '1' : '.45'; }
+  if(mp){ var on2 = st.value === 'Perdido'; mp.disabled = !on2; mp.parentNode.style.opacity = on2 ? '1' : '.45'; }
+}
+
+/* ---------- formulário: procedimento ---------- */
+function abrirProcedimento(id){
+  var p = id ? db.procedimentos.filter(function(x){ return x.id === id; })[0] : null;
+  var d = p || { nome:'', tecnologia:'', especialidade:'HOF', valor:'' };
+  var html = '<div class="fields two">'
+    + campo('Procedimento', '<input id="f_nome" value="' + esc(d.nome) + '">')
+    + campo('Tecnologia / técnica', '<input id="f_tec" value="' + esc(d.tecnologia) + '">')
+    + campo('Especialidade', '<select id="f_esp">' + opcoes(ESP, d.especialidade) + '</select>')
+    + campo('Valor de tabela (R$)', '<input type="number" id="f_val" min="0" step="50" value="' + esc(d.valor) + '">')
+    + '</div>';
+  abrirModal(p ? 'Editar procedimento' : 'Novo procedimento', html, function(){
+    if(!val('f_nome')){ alert('Informe o nome do procedimento.'); return; }
+    var reg = { id: p ? p.id : uid(), nome: val('f_nome'), tecnologia: val('f_tec'),
+                especialidade: val('f_esp'), valor: +val('f_val') || 0, ativo:true };
+    if(p){ db.procedimentos[db.procedimentos.indexOf(p)] = reg; } else { db.procedimentos.push(reg); }
+    salvar(); render(); fecharModal();
+  }, p ? function(){
+    var usado = db.negociacoes.some(function(n){ return n.procedimentoId === p.id; });
+    if(usado){ alert('Este procedimento já tem ofertas registradas e não pode ser excluído.'); return; }
+    if(!confirm('Excluir este procedimento?')) return;
+    db.procedimentos.splice(db.procedimentos.indexOf(p), 1);
+    salvar(); render(); fecharModal();
+  } : null);
+}
+
+/* ---------- listas simples ---------- */
+function addOrigem(){
+  var el = document.getElementById('novaOrigem'), v = el.value.trim();
+  if(!v) return;
+  if(db.origens.indexOf(v) < 0) db.origens.push(v);
+  el.value = ''; salvar(); renderAjustes();
+}
+function delOrigem(i){
+  var o = db.origens[i];
+  if(db.abordagens.some(function(a){ return a.origem === o; })){ alert('Este canal já tem abordagens registradas.'); return; }
+  db.origens.splice(i,1); salvar(); renderAjustes();
+}
+function addAtendente(){
+  var el = document.getElementById('novoAtendente'), v = el.value.trim();
+  if(!v) return;
+  if(db.atendentes.indexOf(v) < 0) db.atendentes.push(v);
+  el.value = ''; salvar(); renderAjustes();
+}
+function delAtendente(i){
+  db.atendentes.splice(i,1); salvar(); renderAjustes();
+}
+
+/* ---------- backup ---------- */
+/* Dentro do visualizador de artifacts, o download passa pela capacidade
+   "downloads" (o visitante confirma). Aberto como arquivo local ou no
+   GitHub Pages, ela não existe e caímos no link de blob normal. */
+var salvarArquivo = null;
+if(window.claude && typeof claude.use === 'function'){
+  claude.use('downloads').then(function(d){ salvarArquivo = d; }).catch(function(){});
+}
+function baixarLocal(nome, texto){
+  var blob = new Blob([texto], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = nome;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function exportar(){
+  var nome = 'crm-hyllua-' + hoje() + '.json';
+  var texto = JSON.stringify(db, null, 2);
+  if(salvarArquivo){
+    salvarArquivo.save({filename:nome, data:texto}).catch(function(err){
+      if(err && err.code === 'declined') return;
+      alert('Não foi possível salvar o backup' + (err && err.message ? ': ' + err.message : '.'));
+    });
+    return;
+  }
+  baixarLocal(nome, texto);
+}
+function importar(input){
+  var f = input.files[0]; if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    try{
+      var o = JSON.parse(r.result);
+      if(!o.abordagens || !o.negociacoes) throw new Error('formato');
+      db = o; salvar(); montarMeses(); render();
+      alert('Backup importado.');
+    }catch(e){ alert('Arquivo inválido — esperado um backup exportado por este sistema.'); }
+    input.value = '';
+  };
+  r.readAsText(f);
+}
+function limpar(){
+  if(!confirm('Apagar todos os lançamentos? O catálogo e as listas são mantidos.')) return;
+  db.abordagens = []; db.negociacoes = [];
+  salvar(); montarMeses(); render();
+}
+
+/* ---------- navegação ---------- */
+function montarMeses(){
+  var l = mesesComDados().slice().reverse();
+  if(l.indexOf(filtroMes) < 0) filtroMes = l[0];
+  document.getElementById('fMes').innerHTML = l.map(function(m){
+    return '<option value="' + m + '"' + (m === filtroMes ? ' selected' : '') + '>' + rotuloMes(m) + '</option>';
+  }).join('');
+}
+function irParaMes(m){
+  filtroMes = m; montarMeses(); render();
+}
+function trocarView(v){
+  document.querySelectorAll('.view').forEach(function(s){ s.classList.toggle('on', s.id === 'v-' + v); });
+  document.querySelectorAll('#tabs button').forEach(function(b){
+    b.setAttribute('aria-selected', String(b.dataset.v === v));
+  });
+  var fab = document.getElementById('fab');
+  fab.classList.toggle('hidden', v === 'inicio' || v === 'ajustes');
+  fab.textContent = v === 'negociacoes' ? '+ Oferta' : '+ Abordagem';
+  window.scrollTo(0,0);
+}
+function fabAction(){
+  var v = document.querySelector('#tabs button[aria-selected="true"]').dataset.v;
+  if(v === 'negociacoes') abrirNegociacao(); else abrirAbordagem();
+}
+document.getElementById('tabs').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(b) trocarView(b.dataset.v);
+});
+document.getElementById('fMes').addEventListener('change', function(){ filtroMes = this.value; render(); });
+document.getElementById('fEsp').addEventListener('change', function(){ filtroEsp = this.value; render(); });
+
+/* ---------- boot ---------- */
+semear(false);
+filtroMes = mesesComDados().slice(-1)[0];
+montarMeses();
+render();
+trocarView('inicio');
+</script>
