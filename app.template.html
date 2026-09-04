@@ -606,7 +606,7 @@ function carregar(){
    e não consegue entrar. Completa o que faltar, preservando o que existe. */
 function USUARIOS_PADRAO(){
   return [
-    { login:'gestao',   senha:'gestao',   nome:'Elisa Kostelnaki', perfil:'gestao' },
+    { login:'gestao',   senha:'gestao',   nome:'', perfil:'gestao' },
     { login:'operador', senha:'operador', nome:'Brenda',           perfil:'operador' }
   ];
 }
@@ -622,6 +622,11 @@ function migrar(){
   if(!Array.isArray(db.procedimentos)){ db.procedimentos = []; mudou = true; }
   if(!Array.isArray(db.abordagens)){ db.abordagens = []; mudou = true; }
   if(!Array.isArray(db.negociacoes)){ db.negociacoes = []; mudou = true; }
+  // o acesso de Gestão passou a nascer sem nome; limpa o que a versão
+  // anterior já tinha gravado, sem mexer em nome escolhido pelo cliente
+  db.usuarios.forEach(function(u){
+    if(u.login === 'gestao' && u.nome === 'Elisa Kostelnaki'){ u.nome = ''; mudou = true; }
+  });
   // sempre precisa sobrar alguém capaz de abrir os Ajustes
   if(!db.usuarios.some(function(u){ return u.perfil === 'gestao'; })){
     db.usuarios = db.usuarios.concat(USUARIOS_PADRAO()[0]);
@@ -857,8 +862,11 @@ function sessaoValida(){
 function abrirApp(){
   document.body.classList.remove('deslogado');
   document.getElementById('login').classList.remove('on');
-  document.getElementById('meNome').textContent = sessao.nome;
-  document.getElementById('mePerfil').textContent = PERFIS[sessao.perfil] || sessao.perfil;
+  var rotuloPerfil = PERFIS[sessao.perfil] || sessao.perfil;
+  document.getElementById('meNome').textContent = sessao.nome || rotuloPerfil;
+  var linha2 = document.getElementById('mePerfil');
+  linha2.textContent = rotuloPerfil;
+  linha2.style.display = sessao.nome ? '' : 'none';   // sem nome, não repete o perfil
   prefs = lerPrefs();
   montarTabs();
   montarMeses();
@@ -1180,7 +1188,8 @@ function renderNegociacoes(){
 function renderAjustes(){
   document.getElementById('tUsuarios').innerHTML = (db.usuarios || []).map(function(u){
     var eu = sessao && u.login === sessao.login;
-    return '<tr><td>' + esc(u.nome) + (eu ? ' <span class="pill p-mut">você</span>' : '') + '</td>'
+    var nome = u.nome ? esc(u.nome) : '<span style="color:var(--tinta-3)">sem nome</span>';
+    return '<tr><td>' + nome + (eu ? ' <span class="pill p-mut">você</span>' : '') + '</td>'
          + '<td>' + esc(u.login) + '</td>'
          + '<td><span class="pill ' + (u.perfil === 'gestao' ? 'p-hof' : 'p-mut') + '">' + PERFIS[u.perfil] + '</span></td>'
          + '<td><button class="linkish" onclick="abrirUsuario(\'' + esc(u.login) + '\')">editar</button></td></tr>';
@@ -1381,7 +1390,7 @@ function abrirUsuario(login){
   var u = login ? db.usuarios.filter(function(x){ return x.login === login; })[0] : null;
   var d = u || { nome:'', login:'', senha:'', perfil:'operador' };
   var html = '<div class="fields two">'
-    + campo('Nome', '<input id="f_nome" value="' + esc(d.nome) + '">')
+    + campo('Nome', '<input id="f_nome" value="' + esc(d.nome) + '" placeholder="opcional">')
     + campo('Usuário', '<input id="f_login" value="' + esc(d.login) + '" autocapitalize="none" spellcheck="false"'
         + (u ? ' disabled' : '') + '>', u ? 'O usuário não pode ser alterado depois de criado.' : '')
     + campo('Perfil', '<select id="f_perfil">'
@@ -1391,7 +1400,6 @@ function abrirUsuario(login){
 
   abrirModal(u ? 'Editar usuário' : 'Novo usuário', html, function(){
     var nome = val('f_nome'), lg = (u ? u.login : val('f_login')).toLowerCase(), perfil = val('f_perfil'), senha = val('f_senha');
-    if(!nome){ alert('Informe o nome.'); return; }
     if(!lg){ alert('Informe o usuário.'); return; }
     if(!u && db.usuarios.some(function(x){ return x.login.toLowerCase() === lg; })){
       alert('Já existe um usuário com esse login.'); return;
@@ -1417,7 +1425,7 @@ function abrirUsuario(login){
     if(u.perfil === 'gestao' && db.usuarios.filter(function(x){ return x.perfil === 'gestao'; }).length === 1){
       alert('Este é o único acesso de Gestão e não pode ser excluído.'); return;
     }
-    if(!confirm('Excluir o acesso de ' + u.nome + '?')) return;
+    if(!confirm('Excluir o acesso de ' + (u.nome || u.login) + '?')) return;
     db.usuarios.splice(db.usuarios.indexOf(u), 1);
     salvar(); render(); fecharModal();
   } : null);
