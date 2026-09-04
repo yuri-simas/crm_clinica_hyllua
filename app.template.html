@@ -549,8 +549,40 @@ function pillEsp(e){ return '<span class="pill ' + (e==='HOF'?'p-hof':'p-odo') +
 /* ---------- persistência ---------- */
 function salvar(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){} }
 function carregar(){
-  try{ var raw = localStorage.getItem(KEY); if(raw){ db = JSON.parse(raw); return true; } }catch(e){}
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){ db = JSON.parse(raw); migrar(); return true; }
+  }catch(e){}
   return false;
+}
+
+/* Base salva por uma versão anterior não tem os campos criados depois.
+   Sem isto, quem já tinha usado o sistema fica sem nenhum acesso cadastrado
+   e não consegue entrar. Completa o que faltar, preservando o que existe. */
+function USUARIOS_PADRAO(){
+  return [
+    { login:'gestao',   senha:'gestao',   nome:'Elisa Kostelnaki', perfil:'gestao' },
+    { login:'operador', senha:'operador', nome:'Brenda',           perfil:'operador' }
+  ];
+}
+function migrar(){
+  if(!db || typeof db !== 'object') return;
+  var mudou = false;
+  if(!Array.isArray(db.usuarios) || !db.usuarios.length){ db.usuarios = USUARIOS_PADRAO(); mudou = true; }
+  if(!Array.isArray(db.origens) || !db.origens.length){
+    db.origens = ['WhatsApp','Instagram','Indicação','Google','Tráfego pago','Presencial','Retorno de paciente'];
+    mudou = true;
+  }
+  if(!Array.isArray(db.atendentes) || !db.atendentes.length){ db.atendentes = ['Brenda','Camila','Bruna']; mudou = true; }
+  if(!Array.isArray(db.procedimentos)){ db.procedimentos = []; mudou = true; }
+  if(!Array.isArray(db.abordagens)){ db.abordagens = []; mudou = true; }
+  if(!Array.isArray(db.negociacoes)){ db.negociacoes = []; mudou = true; }
+  // sempre precisa sobrar alguém capaz de abrir os Ajustes
+  if(!db.usuarios.some(function(u){ return u.perfil === 'gestao'; })){
+    db.usuarios = db.usuarios.concat(USUARIOS_PADRAO()[0]);
+    mudou = true;
+  }
+  if(mudou) salvar();
 }
 
 /* ---------- dados de exemplo ---------- */
@@ -569,10 +601,7 @@ function semear(forcar){
   var usuariosAntes = (db && db.usuarios) ? db.usuarios : null;
 
   db = {
-    usuarios: usuariosAntes || [
-      { login:'gestao',   senha:'gestao',   nome:'Elisa Kostelnaki', perfil:'gestao' },
-      { login:'operador', senha:'operador', nome:'Brenda',           perfil:'operador' }
-    ],
+    usuarios: (usuariosAntes && usuariosAntes.length) ? usuariosAntes : USUARIOS_PADRAO(),
     procedimentos: procs,
     origens: ['WhatsApp','Instagram','Indicação','Google','Tráfego pago','Presencial','Retorno de paciente'],
     atendentes: ['Brenda','Camila','Bruna'],
