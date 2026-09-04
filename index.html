@@ -230,8 +230,100 @@ input:focus,select:focus,textarea:focus{border-color:var(--terracota); outline:n
   margin:0 0 18px;
 }
 .note b{color:var(--marrom); font-weight:500}
+
+/* ---------- login ---------- */
+body.deslogado header, body.deslogado main, body.deslogado .fab{display:none}
+#login{position:fixed; inset:0; background:var(--verde); display:none; place-items:center; padding:24px; z-index:60; overflow-y:auto}
+#login.on{display:grid}
+.loginbox{width:100%; max-width:380px}
+.loginbox .sym{display:block; width:44px; color:var(--ouro); margin-bottom:22px}
+.loginbox .sym svg{width:100%; height:auto; display:block}
+.loginbox h1{font-family:var(--serif); font-weight:400; color:var(--creme); font-size:29px; margin:0 0 4px; letter-spacing:-.01em}
+.loginbox .t{color:var(--salvia); font-size:13px; margin:0 0 26px}
+.loginbox label{color:var(--ouro)}
+.loginbox .campo{margin-bottom:13px}
+.loginbox input{background:var(--verde-2); border-color:rgba(247,236,205,.25); color:var(--creme)}
+.loginbox input:focus{border-color:var(--ouro)}
+.loginbox .btn{width:100%; background:var(--terracota); border-color:var(--terracota); margin-top:6px; padding:11px}
+.loginbox .btn:hover{background:var(--marrom)}
+.loginerr{color:#eda893; font-size:13px; margin:12px 0 0; min-height:19px}
+.loginhint{margin-top:26px; padding-top:18px; border-top:1px solid rgba(247,236,205,.15); color:var(--salvia); font-size:12px; line-height:1.7}
+.loginhint b{color:var(--creme); font-weight:500}
+
+/* ---------- usuario e sessao ---------- */
+.me{display:flex; align-items:center; gap:10px; color:var(--creme); font-size:13px}
+.me .who{text-align:right; line-height:1.2}
+.me .who b{display:block; font-weight:500}
+.me .who span{font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ouro)}
+.me button{
+  background:transparent; border:1px solid rgba(247,236,205,.3); color:var(--creme);
+  border-radius:var(--r); padding:6px 11px; font-size:12px; cursor:pointer;
+}
+.me button:hover{border-color:var(--ouro)}
+#aviso{
+  position:fixed; left:0; right:0; bottom:0; z-index:35;
+  background:var(--warn-bg); border-top:2px solid var(--warn);
+  padding:11px 16px; display:none; align-items:center; justify-content:center;
+  gap:14px; flex-wrap:wrap; font-size:13.5px; color:var(--warn);
+}
+#aviso.on{display:flex}
+#aviso b{font-variant-numeric:tabular-nums}
+
+/* ---------- seletor de visualizacao ---------- */
+.h2row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:30px 0 12px}
+.h2row h2{margin:0}
+.seg{display:flex; gap:2px; margin-left:auto; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r); padding:2px}
+.seg button{
+  background:transparent; border:0; border-radius:3px; padding:5px 11px;
+  font-size:11.5px; color:var(--tinta-2); cursor:pointer; white-space:nowrap;
+}
+.seg button:hover{color:var(--tinta)}
+.seg button[aria-pressed="true"]{background:var(--verde); color:var(--creme)}
+
+/* ---------- graficos ---------- */
+.svgwrap{display:flex; justify-content:center}
+.svgwrap svg{max-width:100%; height:auto}
+.slice{transition:opacity .15s}
+.slice:hover{opacity:.82}
+.donuttot{font-family:var(--serif); fill:var(--tinta); text-anchor:middle}
+.donutlbl{fill:var(--tinta-3); text-anchor:middle; letter-spacing:.14em; text-transform:uppercase}
+.leg{display:grid; gap:7px; margin-top:15px}
+.leg > div{display:grid; grid-template-columns:11px minmax(0,1fr) auto auto; gap:10px; align-items:center; font-size:12.5px}
+.leg i{width:11px; height:11px; border-radius:2px}
+.leg .nm{color:var(--tinta); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.leg .vl{color:var(--tinta-2); font-variant-numeric:tabular-nums}
+.leg .pc{color:var(--tinta-3); font-variant-numeric:tabular-nums; font-size:11.5px; min-width:46px; text-align:right}
+.minitbl{width:100%; border-collapse:collapse; font-size:13px; min-width:0}
+.minitbl th, .minitbl td{padding:8px 0; border-bottom:1px solid var(--line); background:none; position:static; white-space:normal}
+.minitbl th{font-size:9.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--tinta-3); font-weight:400}
+.minitbl td.n, .minitbl th.n{text-align:right; font-variant-numeric:tabular-nums}
+.minitbl tr:last-child td{border-bottom:none}
+.vazio{color:var(--tinta-3); font-size:12.5px; margin:0; padding:16px 0; text-align:center}
+
 footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
 </style>
+
+<div id="login">
+  <form class="loginbox" onsubmit="entrar(event)">
+    <span class="sym"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 464.59 478.12"><g><path d="M461.52,169.98c-8.51-21.71-39.28-35.28-76.61-41.09-9.12-1.42-15.88-9.23-15.87-18.46.15-92.85,2.8-92.96,45.67-102.81V0h-120.6v7.61c42.74,9.81,45.5,8.44,45.67,100.22.02,8.62-6.76,15.74-15.37,16.12-51.33,2.26-93.12,8.11-138.49,19.18-16.03,3.69-32.08,7.78-47.96,12.47-7.08,2.09-14.18-3.19-14.18-10.57v-9.5c0-118.01-.76-117.25,45.68-127.91V0H48.88v7.61c46.44,10.66,45.68,9.9,45.68,127.91v44.7c33.77-12.67,69.24-21.05,104.57-28.34,39.14-8.11,79.27-12.06,119.22-11.88,21.61.03,113.12-.18,124.22,38.52,8.5,29.64-40.84,58.97-63.85,71.31-76.69,40.36-183.44,63.21-269.97,64.06-24.28-.18-58.63-2.01-79.24-15.1-9.85-6.39-12.39-14.85-7.18-25.29,6.24-11.68,17.22-20.03,28.3-27.33,10.89-6.65,22.2-12.53,33.82-17.79,4.74-2.15,10.11,1.34,10.11,6.54v58.17c4.97.2,9.74.29,14.18.32,4.95-.05,9.97-.17,15.05-.37v-60.74c0-11.69,7.66-21.98,18.85-25.37,16.58-5.03,33.34-9.42,49.98-13.6,14.13-3.43,28.52-6.45,42.84-8.93,28.72-4.97,57.81-8.08,86.97-8.57,2-.02,3.99-.03,6-.03,6.29,0,11.38,5.11,11.38,11.4v60.15c10.08-4.11,19.85-8.47,29.23-13.08v-65.01s-.02-.02-.03-.03c-56.14-6.31-112.96-.62-168.15,10.36-53.08,10.93-164.93,38.14-194.65,84.79-8.13,12.91-8.73,29.59.93,42,15.11,19.41,48.69,26.99,69.55,29.89,10.24,1.43,17.87,10.18,17.85,20.52-.28,104.52-3.69,104.63-44.89,113.71v7.61h119.07v-7.61c-41.84-9.22-44.71-9.19-44.9-118.63-.01-7.04,5.62-12.76,12.65-12.91,62.62-1.31,129.24-14.97,187.96-36.91,7.45-2.78,15.38,2.77,15.38,10.72v13.07c0,135.52,0,134.76-44.92,144.66v7.61h119.07v-7.61c-44.92-9.9-44.92-9.13-44.92-144.66v-17.92c0-14.78,7.78-28.45,20.47-36.04,21.35-12.76,53.91-35.69,69.94-64.62,6.09-10.99,6.75-25.37,2.08-37.3Z"/></g></svg></span>
+    <h1>Clinica Hyllua Husein</h1>
+    <p class="t">CRM Comercial &middot; acesso ao sistema</p>
+    <div class="campo"><label for="lgUser">Usuario</label><input id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+    <div class="campo"><label for="lgPass">Senha</label><input id="lgPass" type="password" autocomplete="current-password"></div>
+    <button class="btn" type="submit">Entrar</button>
+    <p class="loginerr" id="lgErro" role="alert"></p>
+    <p class="loginhint">
+      Prototipo, com dois acessos de demonstracao:<br>
+      <b>gestao</b> / gestao &mdash; ve o painel e os ajustes<br>
+      <b>operador</b> / operador &mdash; so lancamentos
+    </p>
+  </form>
+</div>
+
+<div id="aviso" role="status">
+  <span>Sua sessao expira em <b id="avisoSeg">0</b>s por inatividade.</span>
+  <button class="btn sm" onclick="renovarSessao()">Continuar conectado</button>
+</div>
 
 <header>
   <div class="wrap">
@@ -248,13 +340,12 @@ footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
           <option value="Odontológico">Odontológico</option>
         </select>
       </div>
+      <div class="me">
+        <span class="who"><b id="meNome">&mdash;</b><span id="mePerfil">&mdash;</span></span>
+        <button onclick="sair()">Sair</button>
+      </div>
     </div>
-    <nav id="tabs" role="tablist">
-      <button role="tab" data-v="inicio" aria-selected="true">Início</button>
-      <button role="tab" data-v="abordagens" aria-selected="false">Abordagens</button>
-      <button role="tab" data-v="negociacoes" aria-selected="false">Negociações</button>
-      <button role="tab" data-v="ajustes" aria-selected="false">Ajustes</button>
-    </nav>
+    <nav id="tabs" role="tablist"></nav>
   </div>
 </header>
 
@@ -267,47 +358,29 @@ footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
 
     <div class="kpis" id="kpis"></div>
 
-    <h2>Evolução mês a mês</h2>
+    <div class="h2row">
+      <h2>Evolução mês a mês</h2>
+      <div class="seg" id="segEvol"></div>
+    </div>
     <div class="cols c2">
-      <div class="panel">
-        <h3>Faturamento fechado</h3>
-        <div class="chart" id="chFat"></div>
-        <div class="chartx" id="chFatX"></div>
-      </div>
-      <div class="panel">
-        <h3>Conversão de procedimentos</h3>
-        <div class="chart" id="chConv"></div>
-        <div class="chartx" id="chConvX"></div>
-      </div>
+      <div class="panel"><h3>Faturamento fechado</h3><div id="pFat"></div></div>
+      <div class="panel"><h3>Conversão de procedimentos</h3><div id="pConv"></div></div>
     </div>
 
-    <h2>Origem dos agendamentos</h2>
+    <div class="h2row">
+      <h2>Origem dos agendamentos</h2>
+      <div class="seg" id="segOrigem"></div>
+    </div>
     <div class="cols c2">
-      <div class="panel">
-        <h3>Paciente novo × antigo</h3>
-        <div class="split" id="splitNA"></div>
-        <div class="legend">
-          <span><i style="background:var(--terracota)"></i><b id="lgNovo">0</b> novos</span>
-          <span><i style="background:var(--verde)"></i><b id="lgAntigo">0</b> antigos</span>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>Por canal de origem</h3>
-        <div id="porCanal"></div>
-      </div>
+      <div class="panel"><h3>Paciente novo × antigo</h3><div id="pNA"></div></div>
+      <div class="panel"><h3>Por canal de origem</h3><div id="pCanal"></div></div>
     </div>
 
-    <h2>Detalhamento de faturamento</h2>
-    <div class="tw">
-      <table>
-        <thead><tr>
-          <th>Procedimento</th><th>Tecnologia</th><th>Esp.</th>
-          <th class="num">Ofertados</th><th class="num">Fechados</th>
-          <th class="num">Faturamento</th><th class="num">Ticket médio</th><th class="num">% do total</th>
-        </tr></thead>
-        <tbody id="tDetalhe"></tbody>
-      </table>
+    <div class="h2row">
+      <h2>Detalhamento de faturamento</h2>
+      <div class="seg" id="segDetalhe"></div>
     </div>
+    <div id="pDetalhe"></div>
   </section>
 
   <!-- ================= ABORDAGENS ================= -->
@@ -384,6 +457,16 @@ footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
       </div>
     </div>
 
+    <h2>Usuários e acessos</h2>
+    <div class="bar-actions"><button class="btn ghost sm" onclick="abrirUsuario()">+ Novo usuário</button></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Nome</th><th>Usuário</th><th>Perfil</th><th></th></tr></thead>
+        <tbody id="tUsuarios"></tbody>
+      </table>
+    </div>
+    <p class="hint">A sessão cai sozinha após 30 minutos sem uso e avisa 2 minutos antes. Enquanto a pessoa está mexendo, ela se renova sozinha.</p>
+
     <h2>Dados</h2>
     <div class="panel">
       <div style="display:flex;gap:9px;flex-wrap:wrap">
@@ -423,7 +506,33 @@ var STATUS = ['Fechado','Perdido','Em negociação'];
 var MOTIVOS = ['Preço','Sem retorno','Escolheu concorrente','Adiou decisão','Medo/insegurança','Indisponibilidade de agenda','Outro'];
 var MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 var CORTE_NEGOCIACAO = 30; // dias sem movimento até a oferta ser considerada parada
-var db, filtroMes, filtroEsp = '';
+
+/* Sessão: mesma regra do CRM do Instituto — a sessão se renova sozinha enquanto
+   há atividade, avisa antes de cair, e é revalidada quando a aba volta ao foco. */
+var SES_KEY = 'crm-hyllua-sessao';
+var SESSAO_MIN = 30;   // minutos de inatividade até expirar
+var AVISO_SEG  = 120;  // aviso quantos segundos antes
+
+var PERFIS = { gestao:'Gestão', operador:'Operador' };
+var TABS = [
+  { v:'inicio',      label:'Início',      perfis:['gestao'] },
+  { v:'abordagens',  label:'Abordagens',  perfis:['gestao','operador'] },
+  { v:'negociacoes', label:'Negociações', perfis:['gestao','operador'] },
+  { v:'ajustes',     label:'Ajustes',     perfis:['gestao'] }
+];
+
+/* Tipos de visualização por bloco do painel. Séries no tempo não recebem pizza
+   nem rosca de propósito: fatia de pizza representa parte de um todo, não
+   evolução — usar aqui daria uma leitura errada do número. */
+var VIS_EVOL    = [ {v:'barras',t:'Barras'}, {v:'linha',t:'Linha'}, {v:'tabela',t:'Tabela'} ];
+var VIS_PARTES  = [ {v:'rosca',t:'Rosca'}, {v:'pizza',t:'Pizza'}, {v:'barras',t:'Barras'}, {v:'tabela',t:'Tabela'} ];
+var VIS_DETALHE = [ {v:'tabela',t:'Tabela'}, {v:'rosca',t:'Rosca'}, {v:'pizza',t:'Pizza'} ];
+var PREF_PADRAO = { evol:'barras', origem:'rosca', detalhe:'tabela' };
+
+var PALETA = ['#a8623f','#353a2c','#abb48d','#b89c6c','#783c18','#6b7a58','#c9905f','#8d9679'];
+
+var db, sessao = null, prefs = Object.assign({}, PREF_PADRAO);
+var filtroMes, filtroEsp = '';
 
 /* ---------- utilidades ---------- */
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -457,7 +566,13 @@ function semear(forcar){
     {nome:'Facetas / Lentes de Contato', tecnologia:'Cerâmica', especialidade:'Odontológico', valor:9800}
   ].map(function(p){ p.id = uid(); p.ativo = true; return p; });
 
+  var usuariosAntes = (db && db.usuarios) ? db.usuarios : null;
+
   db = {
+    usuarios: usuariosAntes || [
+      { login:'gestao',   senha:'gestao',   nome:'Elisa Kostelnaki', perfil:'gestao' },
+      { login:'operador', senha:'operador', nome:'Brenda',           perfil:'operador' }
+    ],
     procedimentos: procs,
     origens: ['WhatsApp','Instagram','Indicação','Google','Tráfego pago','Presencial','Retorno de paciente'],
     atendentes: ['Brenda','Camila','Bruna'],
@@ -615,80 +730,360 @@ function renderKpis(){
     + (m.emNegociacao ? ' · <span class="stale">' + m.emNegociacao + ' ainda em negociação, fora da conta</span>' : '')
     + (filtroEsp ? ' · filtrado por ' + filtroEsp : '');
 }
-function renderGraficos(){
+
+/* ================= sessão e acesso ================= */
+function lerSessao(){
+  try{ var r = localStorage.getItem(SES_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; }
+}
+function gravarSessao(){
+  try{ localStorage.setItem(SES_KEY, JSON.stringify(sessao)); }catch(e){}
+}
+function renovarSessao(){
+  if(!sessao) return;
+  sessao.expiraEm = Date.now() + SESSAO_MIN * 60000;
+  gravarSessao();
+  document.getElementById('aviso').classList.remove('on');
+}
+function entrar(ev){
+  if(ev) ev.preventDefault();
+  var u = document.getElementById('lgUser').value.trim().toLowerCase();
+  var p = document.getElementById('lgPass').value;
+  var erro = document.getElementById('lgErro');
+  var achado = (db.usuarios || []).filter(function(x){ return x.login.toLowerCase() === u; })[0];
+  if(!achado || achado.senha !== p){
+    erro.textContent = 'Usuário ou senha incorretos.';
+    document.getElementById('lgPass').value = '';
+    document.getElementById('lgPass').focus();
+    return;
+  }
+  erro.textContent = '';
+  document.getElementById('lgPass').value = '';
+  sessao = { login: achado.login, nome: achado.nome, perfil: achado.perfil, expiraEm: 0 };
+  renovarSessao();
+  abrirApp();
+}
+function sair(motivo){
+  sessao = null;
+  try{ localStorage.removeItem(SES_KEY); }catch(e){}
+  document.getElementById('aviso').classList.remove('on');
+  document.body.classList.add('deslogado');
+  document.getElementById('login').classList.add('on');
+  document.getElementById('lgErro').textContent = motivo || '';
+  document.getElementById('lgUser').focus();
+}
+function sessaoValida(){
+  var ss = lerSessao();
+  if(!ss || !ss.expiraEm || Date.now() > ss.expiraEm) return null;
+  var u = (db.usuarios || []).filter(function(x){ return x.login === ss.login; })[0];
+  if(!u) return null;            // usuário removido enquanto a sessão estava aberta
+  ss.perfil = u.perfil;          // perfil sempre vem do cadastro, nunca da sessão salva
+  ss.nome = u.nome;
+  return ss;
+}
+function abrirApp(){
+  document.body.classList.remove('deslogado');
+  document.getElementById('login').classList.remove('on');
+  document.getElementById('meNome').textContent = sessao.nome;
+  document.getElementById('mePerfil').textContent = PERFIS[sessao.perfil] || sessao.perfil;
+  prefs = lerPrefs();
+  montarTabs();
+  montarMeses();
+  render();
+  trocarView(TABS.filter(podeVer)[0].v);
+}
+function podeVer(t){ return sessao && t.perfis.indexOf(sessao.perfil) >= 0; }
+function montarTabs(){
+  document.getElementById('tabs').innerHTML = TABS.filter(podeVer).map(function(t, i){
+    return '<button role="tab" data-v="' + t.v + '" aria-selected="' + (i === 0) + '">' + t.label + '</button>';
+  }).join('');
+}
+
+/* Vigia da sessão: conta o tempo restante, avisa antes de cair e derruba no fim. */
+setInterval(function(){
+  if(!sessao) return;
+  var resta = Math.round((sessao.expiraEm - Date.now()) / 1000);
+  if(resta <= 0){ sair('Sua sessão expirou por inatividade. Entre novamente.'); return; }
+  var av = document.getElementById('aviso');
+  if(resta <= AVISO_SEG){
+    document.getElementById('avisoSeg').textContent = resta;
+    av.classList.add('on');
+  } else if(av.classList.contains('on')){
+    av.classList.remove('on');
+  }
+}, 5000);
+
+/* Qualquer atividade renova a sessão, no máximo uma vez a cada 20s. */
+var ultimaRenovacao = 0;
+['click','keydown','pointerdown'].forEach(function(ev){
+  document.addEventListener(ev, function(){
+    if(!sessao) return;
+    var agora = Date.now();
+    if(agora - ultimaRenovacao > 20000){ ultimaRenovacao = agora; renovarSessao(); }
+  }, true);
+});
+
+/* Ao voltar para a aba, revalida na hora — mesma proteção do CRM do Instituto,
+   onde o navegador pode ficar horas em segundo plano. */
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState !== 'visible' || !sessao) return;
+  if(!sessaoValida()){ sair('Sua sessão expirou por inatividade. Entre novamente.'); return; }
+  renovarSessao();
+});
+
+/* ================= preferências por usuário ================= */
+function prefsKey(){ return 'crm-hyllua-prefs:' + (sessao ? sessao.login : 'anon'); }
+function lerPrefs(){
+  var p = Object.assign({}, PREF_PADRAO);
+  try{
+    var r = JSON.parse(localStorage.getItem(prefsKey()) || '{}');
+    Object.keys(PREF_PADRAO).forEach(function(k){ if(r[k]) p[k] = r[k]; });
+  }catch(e){}
+  return p;
+}
+function definirPref(bloco, valor){
+  prefs[bloco] = valor;
+  try{ localStorage.setItem(prefsKey(), JSON.stringify(prefs)); }catch(e){}
+  render();
+}
+function montarSeg(elId, opcoes, bloco){
+  document.getElementById(elId).innerHTML = opcoes.map(function(o){
+    return '<button type="button" aria-pressed="' + (prefs[bloco] === o.v) + '"'
+         + ' onclick="definirPref(\'' + bloco + '\',\'' + o.v + '\')">' + o.t + '</button>';
+  }).join('');
+}
+
+/* ================= motor de gráficos ================= */
+function ponto(cx, cy, r, a){ return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+function arco(cx, cy, rE, rI, a0, a1){
+  var g = (a1 - a0) > Math.PI ? 1 : 0;
+  var e0 = ponto(cx, cy, rE, a0), e1 = ponto(cx, cy, rE, a1);
+  if(rI <= 0){
+    return 'M' + cx + ',' + cy + ' L' + e0 + ' A' + rE + ',' + rE + ' 0 ' + g + ' 1 ' + e1 + ' Z';
+  }
+  var i1 = ponto(cx, cy, rI, a1), i0 = ponto(cx, cy, rI, a0);
+  return 'M' + e0 + ' A' + rE + ',' + rE + ' 0 ' + g + ' 1 ' + e1
+       + ' L' + i1 + ' A' + rI + ',' + rI + ' 0 ' + g + ' 0 ' + i0 + ' Z';
+}
+function legenda(itens, total, fmt){
+  return '<div class="leg">' + itens.map(function(it, k){
+    return '<div><i style="background:' + PALETA[k % PALETA.length] + '"></i>'
+         + '<span class="nm" title="' + esc(it.rotulo) + '">' + esc(it.rotulo) + '</span>'
+         + '<span class="vl">' + fmt(it.valor) + '</span>'
+         + '<span class="pc">' + (total ? pct(it.valor / total) : '—') + '</span></div>';
+  }).join('') + '</div>';
+}
+/* Pizza (rosca = true) a partir de itens [{rotulo, valor}]. */
+function grafFatias(itens, rosca, fmt, rotuloCentro){
+  itens = itens.filter(function(i){ return i.valor > 0; });
+  var total = itens.reduce(function(a, i){ return a + i.valor; }, 0);
+  if(!total) return '<p class="vazio">Sem dados neste mês.</p>';
+
+  var S = 210, cx = S / 2, cy = S / 2, rE = 96, rI = rosca ? 58 : 0;
+  var partes = '', a = -Math.PI / 2;
+
+  if(itens.length === 1){
+    partes = '<circle class="slice" cx="' + cx + '" cy="' + cy + '" r="' + rE + '" fill="' + PALETA[0] + '"/>';
+    if(rosca) partes += '<circle cx="' + cx + '" cy="' + cy + '" r="' + rI + '" fill="var(--surface)"/>';
+  } else {
+    itens.forEach(function(it, k){
+      var a1 = a + it.valor / total * Math.PI * 2;
+      partes += '<path class="slice" fill="' + PALETA[k % PALETA.length] + '"'
+              + ' d="' + arco(cx, cy, rE, rI, a, a1) + '">'
+              + '<title>' + esc(it.rotulo) + ': ' + fmt(it.valor) + ' (' + pct(it.valor / total) + ')</title></path>';
+      a = a1;
+    });
+  }
+  var centro = '';
+  if(rosca){
+    centro = '<text class="donuttot" x="' + cx + '" y="' + (cy + 2) + '" font-size="21">' + fmt(total) + '</text>'
+           + '<text class="donutlbl" x="' + cx + '" y="' + (cy + 20) + '" font-size="9">' + esc(rotuloCentro || 'Total') + '</text>';
+  }
+  return '<div class="svgwrap"><svg viewBox="0 0 ' + S + ' ' + S + '" width="' + S + '" role="img">'
+       + partes + centro + '</svg></div>' + legenda(itens, total, fmt);
+}
+/* Barras horizontais — boa para listas com rótulo longo, como canal de origem. */
+function grafBarrasH(itens, fmt){
+  itens = itens.filter(function(i){ return i.valor > 0; });
+  if(!itens.length) return '<p class="vazio">Sem dados neste mês.</p>';
+  var max = Math.max.apply(null, itens.map(function(i){ return i.valor; }));
+  var total = itens.reduce(function(a, i){ return a + i.valor; }, 0);
+  return itens.map(function(it, k){
+    return '<div style="display:grid;grid-template-columns:minmax(72px,110px) 1fr auto;gap:10px;align-items:center;margin-bottom:8px">'
+         + '<span style="font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(it.rotulo) + '">' + esc(it.rotulo) + '</span>'
+         + '<span style="background:var(--surface-2);border-radius:2px;height:9px;overflow:hidden">'
+         + '<span style="display:block;height:100%;width:' + (it.valor / max * 100) + '%;background:' + PALETA[k % PALETA.length] + '"></span></span>'
+         + '<span style="font-size:12px;font-variant-numeric:tabular-nums;min-width:34px;text-align:right">' + fmt(it.valor) + '</span></div>';
+  }).join('') + '<p class="vazio" style="padding:6px 0 0;text-align:left">Total: ' + fmt(total) + '</p>';
+}
+function grafTabelaPartes(itens, fmt, cabecalho){
+  itens = itens.filter(function(i){ return i.valor > 0; });
+  if(!itens.length) return '<p class="vazio">Sem dados neste mês.</p>';
+  var total = itens.reduce(function(a, i){ return a + i.valor; }, 0);
+  return '<table class="minitbl"><thead><tr><th>' + esc(cabecalho || 'Item') + '</th>'
+       + '<th class="n">Qtd.</th><th class="n">%</th></tr></thead><tbody>'
+       + itens.map(function(it){
+           return '<tr><td>' + esc(it.rotulo) + '</td><td class="n">' + fmt(it.valor) + '</td>'
+                + '<td class="n">' + pct(it.valor / total) + '</td></tr>';
+         }).join('')
+       + '<tr><td><b>Total</b></td><td class="n"><b>' + fmt(total) + '</b></td><td class="n">100%</td></tr>'
+       + '</tbody></table>';
+}
+/* Despacha um bloco de composição conforme a preferência do usuário. */
+function blocoPartes(itens, tipo, fmt, cabecalho, rotuloCentro){
+  if(tipo === 'pizza')  return grafFatias(itens, false, fmt, rotuloCentro);
+  if(tipo === 'barras') return grafBarrasH(itens, fmt);
+  if(tipo === 'tabela') return grafTabelaPartes(itens, fmt, cabecalho);
+  return grafFatias(itens, true, fmt, rotuloCentro);
+}
+
+/* --- séries no tempo --- */
+function serieBarras(pontos, curto){
+  var max = Math.max.apply(null, pontos.map(function(p){ return p.valor; }).concat([1e-9]));
+  return '<div class="chart">' + pontos.map(function(p){
+      return '<div class="col' + (p.agora ? ' now' : '') + '">'
+           + '<span class="val">' + curto(p.valor) + '</span>'
+           + '<div class="bar" style="height:' + Math.max(2, Math.round(p.valor / max * 100)) + '%"></div></div>';
+    }).join('') + '</div>'
+    + '<div class="chartx">' + pontos.map(function(p){
+      return '<span' + (p.agora ? ' class="now"' : '') + '>' + p.rotulo + '</span>';
+    }).join('') + '</div>';
+}
+function serieLinha(pontos, curto, longo){
+  if(pontos.length < 2) return serieBarras(pontos, curto);
+  var W = 320, H = 150, pe = 30, pd = 26, pt = 16, pb = 26;
+  var max = Math.max.apply(null, pontos.map(function(p){ return p.valor; }).concat([1e-9]));
+  var passo = (W - pe - pd) / (pontos.length - 1);
+  var xy = pontos.map(function(p, i){
+    return [pe + i * passo, pt + (1 - p.valor / max) * (H - pt - pb)];
+  });
+  var linha = xy.map(function(c){ return c[0].toFixed(1) + ',' + c[1].toFixed(1); }).join(' ');
+  var area = 'M' + xy[0][0].toFixed(1) + ',' + (H - pb) + ' L' + linha.split(' ').join(' L')
+           + ' L' + xy[xy.length - 1][0].toFixed(1) + ',' + (H - pb) + ' Z';
+  var grade = [0, 0.5, 1].map(function(t){
+    var y = pt + t * (H - pt - pb);
+    return '<line x1="' + pe + '" y1="' + y + '" x2="' + (W - pd) + '" y2="' + y + '" stroke="var(--line)" stroke-width="1"/>';
+  }).join('');
+  var pts = xy.map(function(c, i){
+    var ult = i === xy.length - 1;
+    return '<circle cx="' + c[0].toFixed(1) + '" cy="' + c[1].toFixed(1) + '" r="' + (ult ? 4.5 : 2.8) + '"'
+         + ' fill="' + (ult ? 'var(--terracota)' : 'var(--salvia)') + '">'
+         + '<title>' + pontos[i].rotulo + ': ' + longo(pontos[i].valor) + '</title></circle>';
+  }).join('');
+  var rotulos = pontos.map(function(p, i){
+    return '<text x="' + xy[i][0].toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="9"'
+         + ' fill="' + (p.agora ? 'var(--terracota)' : 'var(--tinta-3)') + '"'
+         + ' style="letter-spacing:.1em;text-transform:uppercase">' + p.rotulo + '</text>';
+  }).join('');
+  return '<div class="svgwrap"><svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" role="img">'
+       + grade
+       + '<path d="' + area + '" fill="var(--salvia)" opacity=".18"/>'
+       + '<polyline points="' + linha + '" fill="none" stroke="var(--terracota)" stroke-width="2"'
+       + ' stroke-linejoin="round" stroke-linecap="round"/>'
+       + pts + rotulos
+       + '<text x="' + (pe - 6) + '" y="' + (pt + 4) + '" text-anchor="end" font-size="9" fill="var(--tinta-3)">' + curto(max) + '</text>'
+       + '<text x="' + (pe - 6) + '" y="' + (H - pb) + '" text-anchor="end" font-size="9" fill="var(--tinta-3)">0</text>'
+       + '</svg></div>';
+}
+function serieTabela(pontos, longo){
+  return '<table class="minitbl"><thead><tr><th>Mês</th><th class="n">Valor</th><th class="n">Variação</th></tr></thead><tbody>'
+       + pontos.map(function(p, i){
+           var v = '—';
+           if(i > 0){
+             var ant = pontos[i - 1].valor;
+             if(ant > 0){
+               var d = (p.valor - ant) / ant;
+               var cls = d > 0 ? 'up' : (d < 0 ? 'down' : 'flat');
+               v = '<span class="' + cls + '">' + (d > 0 ? '+' : '') + (d * 100).toFixed(0) + '%</span>';
+             }
+           }
+           return '<tr' + (p.agora ? ' style="background:var(--surface-2)"' : '') + '>'
+                + '<td>' + p.rotulo + '</td><td class="n">' + longo(p.valor) + '</td><td class="n">' + v + '</td></tr>';
+         }).join('')
+       + '</tbody></table>';
+}
+function blocoSerie(pontos, tipo, longo, curto){
+  if(tipo === 'linha')  return serieLinha(pontos, curto, longo);
+  if(tipo === 'tabela') return serieTabela(pontos, longo);
+  return serieBarras(pontos, curto);
+}
+
+function janelaMeses(){
   var todos = mesesComDados();
   var i = todos.indexOf(filtroMes);
-  var janela = todos.slice(Math.max(0, i - 5), i + 1);
-  var dados = janela.map(function(m){ return metricas(m); });
-
-  function barras(elBar, elX, valores, fmt){
-    var max = Math.max.apply(null, valores.map(function(v){ return v.valor; }).concat([1]));
-    document.getElementById(elBar).innerHTML = valores.map(function(v){
-      var h = Math.max(2, Math.round(v.valor / max * 100));
-      return '<div class="col' + (v.agora ? ' now' : '') + '">'
-           + '<span class="val">' + fmt(v.valor) + '</span>'
-           + '<div class="bar" style="height:' + h + '%"></div></div>';
-    }).join('');
-    document.getElementById(elX).innerHTML = valores.map(function(v){
-      return '<span' + (v.agora ? ' class="now"' : '') + '>' + rotuloMes(v.mes) + '</span>';
-    }).join('');
-  }
-  barras('chFat','chFatX', dados.map(function(d){
-    return { mes:d.mes, valor:d.faturamento, agora:d.mes === filtroMes };
-  }), function(v){ return v >= 1000 ? (v/1000).toFixed(0) + 'k' : String(v); });
-
-  barras('chConv','chConvX', dados.map(function(d){
-    return { mes:d.mes, valor:d.convProc, agora:d.mes === filtroMes };
-  }), function(v){ return (v*100).toFixed(0) + '%'; });
+  return todos.slice(Math.max(0, i - 5), i + 1);
 }
+function kCurto(v){ return v >= 1000 ? (v / 1000).toFixed(0) + 'k' : String(Math.round(v)); }
+function pctCurto(v){ return (v * 100).toFixed(0) + '%'; }
+function qtd(v){ return String(v); }
+
+function renderGraficos(){
+  montarSeg('segEvol', VIS_EVOL, 'evol');
+  var dados = janelaMeses().map(function(m){ return metricas(m); });
+  document.getElementById('pFat').innerHTML = blocoSerie(
+    dados.map(function(d){ return { rotulo:rotuloMes(d.mes), valor:d.faturamento, agora:d.mes === filtroMes }; }),
+    prefs.evol, brl, kCurto);
+  document.getElementById('pConv').innerHTML = blocoSerie(
+    dados.map(function(d){ return { rotulo:rotuloMes(d.mes), valor:d.convProc, agora:d.mes === filtroMes }; }),
+    prefs.evol, pct, pctCurto);
+}
+
 function renderOrigem(){
+  montarSeg('segOrigem', VIS_PARTES, 'origem');
   var m = metricas(filtroMes);
-  var tot = m.novos + m.antigos;
-  var sp = document.getElementById('splitNA');
-  if(!tot){
-    sp.innerHTML = '<div style="flex:1;color:var(--tinta-3);font-size:12px">sem abordagens no mês</div>';
-  } else {
-    sp.innerHTML = '<div class="novo" style="flex:' + m.novos + '">' + (m.novos ? pct(m.novos/tot) : '') + '</div>'
-                 + '<div class="antigo" style="flex:' + m.antigos + '">' + (m.antigos ? pct(m.antigos/tot) : '') + '</div>';
-  }
-  document.getElementById('lgNovo').textContent = m.novos;
-  document.getElementById('lgAntigo').textContent = m.antigos;
-
-  var pares = Object.keys(m.canais).map(function(k){ return [k, m.canais[k]]; })
-                    .sort(function(a,b){ return b[1] - a[1]; });
-  var maxC = pares.length ? pares[0][1] : 1;
-  document.getElementById('porCanal').innerHTML = pares.length ? pares.map(function(p){
-    return '<div style="display:grid;grid-template-columns:120px 1fr 34px;gap:10px;align-items:center;margin-bottom:7px">'
-         + '<span style="font-size:12.5px">' + esc(p[0]) + '</span>'
-         + '<span style="background:var(--surface-2);border-radius:2px;height:8px;overflow:hidden">'
-         + '<span style="display:block;height:100%;width:' + (p[1]/maxC*100) + '%;background:var(--ouro)"></span></span>'
-         + '<span style="font-size:12px;text-align:right;font-variant-numeric:tabular-nums">' + p[1] + '</span></div>';
-  }).join('') : '<p style="color:var(--tinta-3);font-size:12.5px;margin:0">Sem abordagens no mês.</p>';
+  document.getElementById('pNA').innerHTML = blocoPartes(
+    [ { rotulo:'Paciente novo', valor:m.novos }, { rotulo:'Paciente antigo', valor:m.antigos } ],
+    prefs.origem, qtd, 'Tipo de paciente', 'Abordagens');
+  var canais = Object.keys(m.canais).map(function(k){ return { rotulo:k, valor:m.canais[k] }; })
+                     .sort(function(a, b){ return b.valor - a.valor; });
+  document.getElementById('pCanal').innerHTML = blocoPartes(
+    canais, prefs.origem, qtd, 'Canal', 'Abordagens');
 }
+
 function renderDetalhe(){
+  montarSeg('segDetalhe', VIS_DETALHE, 'detalhe');
   var ng = filtraEsp(db.negociacoes).filter(function(n){ return mesDe(n.data) === filtroMes; });
   var totalFat = ng.filter(function(n){ return n.status === 'Fechado'; })
-                   .reduce(function(s,n){ return s + (+n.valorFechado||0); }, 0);
+                   .reduce(function(s, n){ return s + (+n.valorFechado || 0); }, 0);
   var linhas = db.procedimentos.map(function(p){
     var doProc = ng.filter(function(n){ return n.procedimentoId === p.id; });
     var fech = doProc.filter(function(n){ return n.status === 'Fechado'; });
-    var fat = fech.reduce(function(s,n){ return s + (+n.valorFechado||0); }, 0);
+    var fat = fech.reduce(function(s, n){ return s + (+n.valorFechado || 0); }, 0);
     return { p:p, ofertados:doProc.length, fechados:fech.length, fat:fat,
-             ticket: fech.length ? fat/fech.length : 0,
-             share: totalFat ? fat/totalFat : 0 };
+             ticket: fech.length ? fat / fech.length : 0,
+             share: totalFat ? fat / totalFat : 0 };
   }).filter(function(l){ return l.ofertados > 0; })
-    .sort(function(a,b){ return b.fat - a.fat; });
+    .sort(function(a, b){ return b.fat - a.fat; });
 
-  var tb = document.getElementById('tDetalhe');
-  if(!linhas.length){ tb.innerHTML = '<tr><td colspan="8" class="empty">Nenhuma oferta registrada neste mês.</td></tr>'; return; }
-  tb.innerHTML = linhas.map(function(l){
-    return '<tr><td>' + esc(l.p.nome) + '</td><td>' + esc(l.p.tecnologia) + '</td>'
-         + '<td>' + pillEsp(l.p.especialidade) + '</td>'
-         + '<td class="num">' + l.ofertados + '</td><td class="num">' + l.fechados + '</td>'
-         + '<td class="num">' + brl(l.fat) + '</td><td class="num">' + (l.fechados ? brl(l.ticket) : '—') + '</td>'
-         + '<td class="num">' + (l.share ? pct(l.share) : '—') + '</td></tr>';
-  }).join('') + '<tr style="background:var(--surface-2)"><td colspan="5"><b>Total</b></td>'
-    + '<td class="num"><b>' + brl(totalFat) + '</b></td><td colspan="2"></td></tr>';
+  var alvo = document.getElementById('pDetalhe');
+
+  if(prefs.detalhe === 'rosca' || prefs.detalhe === 'pizza'){
+    var itens = linhas.filter(function(l){ return l.fat > 0; })
+                      .map(function(l){ return { rotulo:l.p.nome, valor:l.fat }; });
+    alvo.innerHTML = '<div class="panel">'
+      + grafFatias(itens, prefs.detalhe === 'rosca', brl, 'Faturamento') + '</div>';
+    return;
+  }
+
+  if(!linhas.length){
+    alvo.innerHTML = '<div class="tw"><p class="empty">Nenhuma oferta registrada neste mês.</p></div>';
+    return;
+  }
+  alvo.innerHTML = '<div class="tw"><table><thead><tr>'
+    + '<th>Procedimento</th><th>Tecnologia</th><th>Esp.</th>'
+    + '<th class="num">Ofertados</th><th class="num">Fechados</th>'
+    + '<th class="num">Faturamento</th><th class="num">Ticket médio</th><th class="num">% do total</th>'
+    + '</tr></thead><tbody>'
+    + linhas.map(function(l){
+        return '<tr><td>' + esc(l.p.nome) + '</td><td>' + esc(l.p.tecnologia) + '</td>'
+             + '<td>' + pillEsp(l.p.especialidade) + '</td>'
+             + '<td class="num">' + l.ofertados + '</td><td class="num">' + l.fechados + '</td>'
+             + '<td class="num">' + brl(l.fat) + '</td>'
+             + '<td class="num">' + (l.fechados ? brl(l.ticket) : '—') + '</td>'
+             + '<td class="num">' + (l.share ? pct(l.share) : '—') + '</td></tr>';
+      }).join('')
+    + '<tr style="background:var(--surface-2)"><td colspan="5"><b>Total</b></td>'
+    + '<td class="num"><b>' + brl(totalFat) + '</b></td><td colspan="2"></td></tr>'
+    + '</tbody></table></div>';
 }
 
 /* ---------- render: listas ---------- */
@@ -744,6 +1139,14 @@ function renderNegociacoes(){
   }).join('');
 }
 function renderAjustes(){
+  document.getElementById('tUsuarios').innerHTML = (db.usuarios || []).map(function(u){
+    var eu = sessao && u.login === sessao.login;
+    return '<tr><td>' + esc(u.nome) + (eu ? ' <span class="pill p-mut">você</span>' : '') + '</td>'
+         + '<td>' + esc(u.login) + '</td>'
+         + '<td><span class="pill ' + (u.perfil === 'gestao' ? 'p-hof' : 'p-mut') + '">' + PERFIS[u.perfil] + '</span></td>'
+         + '<td><button class="linkish" onclick="abrirUsuario(\'' + esc(u.login) + '\')">editar</button></td></tr>';
+  }).join('') || '<tr><td colspan="4" class="empty">Nenhum usuário.</td></tr>';
+
   document.getElementById('tProcedimentos').innerHTML = db.procedimentos.map(function(p){
     return '<tr><td>' + esc(p.nome) + '</td><td>' + esc(p.tecnologia) + '</td>'
          + '<td>' + pillEsp(p.especialidade) + '</td>'
@@ -763,8 +1166,11 @@ function renderAjustes(){
 }
 
 function render(){
-  renderKpis(); renderGraficos(); renderOrigem(); renderDetalhe();
-  renderAbordagens(); renderNegociacoes(); renderAjustes();
+  if(!sessao) return;
+  if(sessao.perfil === 'gestao'){
+    renderKpis(); renderGraficos(); renderOrigem(); renderDetalhe(); renderAjustes();
+  }
+  renderAbordagens(); renderNegociacoes();
 }
 
 /* ---------- modal ---------- */
@@ -931,6 +1337,53 @@ function abrirProcedimento(id){
   } : null);
 }
 
+/* ---------- formulário: usuário ---------- */
+function abrirUsuario(login){
+  var u = login ? db.usuarios.filter(function(x){ return x.login === login; })[0] : null;
+  var d = u || { nome:'', login:'', senha:'', perfil:'operador' };
+  var html = '<div class="fields two">'
+    + campo('Nome', '<input id="f_nome" value="' + esc(d.nome) + '">')
+    + campo('Usuário', '<input id="f_login" value="' + esc(d.login) + '" autocapitalize="none" spellcheck="false"'
+        + (u ? ' disabled' : '') + '>', u ? 'O usuário não pode ser alterado depois de criado.' : '')
+    + campo('Perfil', '<select id="f_perfil">'
+        + opcoes([{v:'operador',t:'Operador — só lançamentos'},{v:'gestao',t:'Gestão — vê tudo'}], d.perfil) + '</select>')
+    + campo('Senha', '<input type="password" id="f_senha" placeholder="' + (u ? 'deixe em branco para manter' : '') + '">')
+    + '</div>';
+
+  abrirModal(u ? 'Editar usuário' : 'Novo usuário', html, function(){
+    var nome = val('f_nome'), lg = (u ? u.login : val('f_login')).toLowerCase(), perfil = val('f_perfil'), senha = val('f_senha');
+    if(!nome){ alert('Informe o nome.'); return; }
+    if(!lg){ alert('Informe o usuário.'); return; }
+    if(!u && db.usuarios.some(function(x){ return x.login.toLowerCase() === lg; })){
+      alert('Já existe um usuário com esse login.'); return;
+    }
+    if(!u && !senha){ alert('Defina uma senha.'); return; }
+    // nunca deixar o sistema sem ninguém que consiga entrar nos Ajustes
+    if(u && u.perfil === 'gestao' && perfil !== 'gestao'
+       && db.usuarios.filter(function(x){ return x.perfil === 'gestao'; }).length === 1){
+      alert('Este é o único acesso de Gestão. Crie outro antes de mudar o perfil deste.'); return;
+    }
+    if(u){
+      u.nome = nome; u.perfil = perfil;
+      if(senha) u.senha = senha;
+    } else {
+      db.usuarios.push({ login:lg, senha:senha, nome:nome, perfil:perfil });
+    }
+    salvar();
+    if(sessao && u && u.login === sessao.login){ sessao.nome = nome; sessao.perfil = perfil; gravarSessao(); abrirApp(); }
+    else { render(); }
+    fecharModal();
+  }, u ? function(){
+    if(u.login === sessao.login){ alert('Você não pode excluir o próprio acesso.'); return; }
+    if(u.perfil === 'gestao' && db.usuarios.filter(function(x){ return x.perfil === 'gestao'; }).length === 1){
+      alert('Este é o único acesso de Gestão e não pode ser excluído.'); return;
+    }
+    if(!confirm('Excluir o acesso de ' + u.nome + '?')) return;
+    db.usuarios.splice(db.usuarios.indexOf(u), 1);
+    salvar(); render(); fecharModal();
+  } : null);
+}
+
 /* ---------- listas simples ---------- */
 function addOrigem(){
   var el = document.getElementById('novaOrigem'), v = el.value.trim();
@@ -988,6 +1441,7 @@ function importar(input){
     try{
       var o = JSON.parse(r.result);
       if(!o.abordagens || !o.negociacoes) throw new Error('formato');
+      if(!o.usuarios || !o.usuarios.length) o.usuarios = db.usuarios;  // backup antigo não tinha acessos
       db = o; salvar(); montarMeses(); render();
       alert('Backup importado.');
     }catch(e){ alert('Arquivo inválido — esperado um backup exportado por este sistema.'); }
@@ -996,7 +1450,7 @@ function importar(input){
   r.readAsText(f);
 }
 function limpar(){
-  if(!confirm('Apagar todos os lançamentos? O catálogo e as listas são mantidos.')) return;
+  if(!confirm('Apagar todos os lançamentos? O catálogo, as listas e os acessos são mantidos.')) return;
   db.abordagens = []; db.negociacoes = [];
   salvar(); montarMeses(); render();
 }
@@ -1013,6 +1467,9 @@ function irParaMes(m){
   filtroMes = m; montarMeses(); render();
 }
 function trocarView(v){
+  // o perfil manda: um operador não alcança Início nem Ajustes nem digitando na URL
+  var aba = TABS.filter(function(t){ return t.v === v; })[0];
+  if(!aba || !podeVer(aba)) v = TABS.filter(podeVer)[0].v;
   document.querySelectorAll('.view').forEach(function(s){ s.classList.toggle('on', s.id === 'v-' + v); });
   document.querySelectorAll('#tabs button').forEach(function(b){
     b.setAttribute('aria-selected', String(b.dataset.v === v));
@@ -1035,7 +1492,13 @@ document.getElementById('fEsp').addEventListener('change', function(){ filtroEsp
 /* ---------- boot ---------- */
 semear(false);
 filtroMes = mesesComDados().slice(-1)[0];
-montarMeses();
-render();
-trocarView('inicio');
+
+var restaurada = sessaoValida();
+if(restaurada){
+  sessao = restaurada;
+  renovarSessao();
+  abrirApp();
+} else {
+  sair();
+}
 </script>
