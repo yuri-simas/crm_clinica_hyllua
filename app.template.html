@@ -422,6 +422,50 @@ footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
     </div>
   </section>
 
+  <!-- ================= RELATÓRIOS ================= -->
+  <section class="view" id="v-relatorios">
+    <h1>Relatórios</h1>
+    <p class="sub">Exporta o fechamento em Excel, com uma aba por conjunto de dados.</p>
+
+    <div class="panel" style="margin-bottom:16px">
+      <div class="fields two" style="margin-bottom:16px">
+        <div><label for="rPeriodo">Período</label>
+          <select id="rPeriodo" onchange="renderRelatorios()">
+            <option value="1">Mês selecionado</option>
+            <option value="3">Últimos 3 meses</option>
+            <option value="6" selected>Últimos 6 meses</option>
+            <option value="12">Últimos 12 meses</option>
+            <option value="0">Todo o período</option>
+          </select>
+        </div>
+        <div><label for="rEsp">Especialidade</label>
+          <select id="rEsp" onchange="renderRelatorios()">
+            <option value="">Todas</option>
+            <option value="HOF">HOF</option>
+            <option value="Odontológico">Odontológico</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Abas do arquivo</label>
+      <div id="rAbas" style="display:grid;gap:9px;margin-top:8px"></div>
+
+      <div class="bar-actions" style="margin:20px 0 0">
+        <button class="btn" onclick="baixarExcel()">Baixar Excel (.xlsx)</button>
+        <button class="btn ghost" onclick="baixarCSV()">Baixar resumo em CSV</button>
+      </div>
+      <p class="hint" id="rAviso"></p>
+    </div>
+
+    <h2>O que vai no arquivo</h2>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Aba</th><th>Conteúdo</th><th class="num">Linhas</th></tr></thead>
+        <tbody id="rPreview"></tbody>
+      </table>
+    </div>
+  </section>
+
   <!-- ================= AJUSTES ================= -->
   <section class="view" id="v-ajustes">
     <h1>Ajustes</h1>
@@ -518,15 +562,16 @@ var TABS = [
   { v:'inicio',      label:'Início',      perfis:['gestao'] },
   { v:'abordagens',  label:'Abordagens',  perfis:['gestao','operador'] },
   { v:'negociacoes', label:'Negociações', perfis:['gestao','operador'] },
+  { v:'relatorios',  label:'Relatórios',  perfis:['gestao'] },
   { v:'ajustes',     label:'Ajustes',     perfis:['gestao'] }
 ];
 
 /* Tipos de visualização por bloco do painel. Séries no tempo não recebem pizza
    nem rosca de propósito: fatia de pizza representa parte de um todo, não
    evolução — usar aqui daria uma leitura errada do número. */
-var VIS_EVOL    = [ {v:'barras',t:'Barras'}, {v:'linha',t:'Linha'}, {v:'tabela',t:'Tabela'} ];
-var VIS_PARTES  = [ {v:'rosca',t:'Rosca'}, {v:'pizza',t:'Pizza'}, {v:'barras',t:'Barras'}, {v:'tabela',t:'Tabela'} ];
-var VIS_DETALHE = [ {v:'tabela',t:'Tabela'}, {v:'rosca',t:'Rosca'}, {v:'pizza',t:'Pizza'} ];
+var VIS_EVOL    = [ {v:'barras',t:'Barras'}, {v:'tabela',t:'Tabela'} ];
+var VIS_PARTES  = [ {v:'rosca',t:'Rosca'}, {v:'barras',t:'Barras'}, {v:'tabela',t:'Tabela'} ];
+var VIS_DETALHE = [ {v:'tabela',t:'Tabela'}, {v:'rosca',t:'Rosca'} ];
 var PREF_PADRAO = { evol:'barras', origem:'rosca', detalhe:'tabela' };
 
 var PALETA = ['#a8623f','#353a2c','#abb48d','#b89c6c','#783c18','#6b7a58','#c9905f','#8d9679'];
@@ -863,9 +908,13 @@ document.addEventListener('visibilitychange', function(){
 function prefsKey(){ return 'crm-hyllua-prefs:' + (sessao ? sessao.login : 'anon'); }
 function lerPrefs(){
   var p = Object.assign({}, PREF_PADRAO);
+  var validos = { evol:VIS_EVOL, origem:VIS_PARTES, detalhe:VIS_DETALHE };
   try{
     var r = JSON.parse(localStorage.getItem(prefsKey()) || '{}');
-    Object.keys(PREF_PADRAO).forEach(function(k){ if(r[k]) p[k] = r[k]; });
+    Object.keys(PREF_PADRAO).forEach(function(k){
+      // ignora preferência salva de um tipo que não existe mais
+      if(r[k] && validos[k].some(function(o){ return o.v === r[k]; })) p[k] = r[k];
+    });
   }catch(e){}
   return p;
 }
@@ -959,7 +1008,6 @@ function grafTabelaPartes(itens, fmt, cabecalho){
 }
 /* Despacha um bloco de composição conforme a preferência do usuário. */
 function blocoPartes(itens, tipo, fmt, cabecalho, rotuloCentro){
-  if(tipo === 'pizza')  return grafFatias(itens, false, fmt, rotuloCentro);
   if(tipo === 'barras') return grafBarrasH(itens, fmt);
   if(tipo === 'tabela') return grafTabelaPartes(itens, fmt, cabecalho);
   return grafFatias(itens, true, fmt, rotuloCentro);
@@ -976,42 +1024,6 @@ function serieBarras(pontos, curto){
     + '<div class="chartx">' + pontos.map(function(p){
       return '<span' + (p.agora ? ' class="now"' : '') + '>' + p.rotulo + '</span>';
     }).join('') + '</div>';
-}
-function serieLinha(pontos, curto, longo){
-  if(pontos.length < 2) return serieBarras(pontos, curto);
-  var W = 320, H = 150, pe = 30, pd = 26, pt = 16, pb = 26;
-  var max = Math.max.apply(null, pontos.map(function(p){ return p.valor; }).concat([1e-9]));
-  var passo = (W - pe - pd) / (pontos.length - 1);
-  var xy = pontos.map(function(p, i){
-    return [pe + i * passo, pt + (1 - p.valor / max) * (H - pt - pb)];
-  });
-  var linha = xy.map(function(c){ return c[0].toFixed(1) + ',' + c[1].toFixed(1); }).join(' ');
-  var area = 'M' + xy[0][0].toFixed(1) + ',' + (H - pb) + ' L' + linha.split(' ').join(' L')
-           + ' L' + xy[xy.length - 1][0].toFixed(1) + ',' + (H - pb) + ' Z';
-  var grade = [0, 0.5, 1].map(function(t){
-    var y = pt + t * (H - pt - pb);
-    return '<line x1="' + pe + '" y1="' + y + '" x2="' + (W - pd) + '" y2="' + y + '" stroke="var(--line)" stroke-width="1"/>';
-  }).join('');
-  var pts = xy.map(function(c, i){
-    var ult = i === xy.length - 1;
-    return '<circle cx="' + c[0].toFixed(1) + '" cy="' + c[1].toFixed(1) + '" r="' + (ult ? 4.5 : 2.8) + '"'
-         + ' fill="' + (ult ? 'var(--terracota)' : 'var(--salvia)') + '">'
-         + '<title>' + pontos[i].rotulo + ': ' + longo(pontos[i].valor) + '</title></circle>';
-  }).join('');
-  var rotulos = pontos.map(function(p, i){
-    return '<text x="' + xy[i][0].toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="9"'
-         + ' fill="' + (p.agora ? 'var(--terracota)' : 'var(--tinta-3)') + '"'
-         + ' style="letter-spacing:.1em;text-transform:uppercase">' + p.rotulo + '</text>';
-  }).join('');
-  return '<div class="svgwrap"><svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" role="img">'
-       + grade
-       + '<path d="' + area + '" fill="var(--salvia)" opacity=".18"/>'
-       + '<polyline points="' + linha + '" fill="none" stroke="var(--terracota)" stroke-width="2"'
-       + ' stroke-linejoin="round" stroke-linecap="round"/>'
-       + pts + rotulos
-       + '<text x="' + (pe - 6) + '" y="' + (pt + 4) + '" text-anchor="end" font-size="9" fill="var(--tinta-3)">' + curto(max) + '</text>'
-       + '<text x="' + (pe - 6) + '" y="' + (H - pb) + '" text-anchor="end" font-size="9" fill="var(--tinta-3)">0</text>'
-       + '</svg></div>';
 }
 function serieTabela(pontos, longo){
   return '<table class="minitbl"><thead><tr><th>Mês</th><th class="n">Valor</th><th class="n">Variação</th></tr></thead><tbody>'
@@ -1031,7 +1043,6 @@ function serieTabela(pontos, longo){
        + '</tbody></table>';
 }
 function blocoSerie(pontos, tipo, longo, curto){
-  if(tipo === 'linha')  return serieLinha(pontos, curto, longo);
   if(tipo === 'tabela') return serieTabela(pontos, longo);
   return serieBarras(pontos, curto);
 }
@@ -1085,11 +1096,10 @@ function renderDetalhe(){
 
   var alvo = document.getElementById('pDetalhe');
 
-  if(prefs.detalhe === 'rosca' || prefs.detalhe === 'pizza'){
+  if(prefs.detalhe === 'rosca'){
     var itens = linhas.filter(function(l){ return l.fat > 0; })
                       .map(function(l){ return { rotulo:l.p.nome, valor:l.fat }; });
-    alvo.innerHTML = '<div class="panel">'
-      + grafFatias(itens, prefs.detalhe === 'rosca', brl, 'Faturamento') + '</div>';
+    alvo.innerHTML = '<div class="panel">' + grafFatias(itens, true, brl, 'Faturamento') + '</div>';
     return;
   }
 
@@ -1197,7 +1207,7 @@ function renderAjustes(){
 function render(){
   if(!sessao) return;
   if(sessao.perfil === 'gestao'){
-    renderKpis(); renderGraficos(); renderOrigem(); renderDetalhe(); renderAjustes();
+    renderKpis(); renderGraficos(); renderOrigem(); renderDetalhe(); renderRelatorios(); renderAjustes();
   }
   renderAbordagens(); renderNegociacoes();
 }
@@ -1435,6 +1445,422 @@ function delAtendente(i){
   db.atendentes.splice(i,1); salvar(); renderAjustes();
 }
 
+
+/* ================= gerador de .xlsx =================
+   Escreve um arquivo Excel de verdade — várias abas, cabeçalho em negrito,
+   colunas de moeda, porcentagem e data com o formato certo. Sem biblioteca:
+   um .xlsx é um zip de XMLs, então montamos o zip na mão (sem compressão). */
+var CRC_TAB = (function(){
+  var t = [], c, n, k;
+  for(n = 0; n < 256; n++){
+    c = n;
+    for(k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(b){
+  var c = 0xFFFFFFFF;
+  for(var i = 0; i < b.length; i++) c = CRC_TAB[(c ^ b[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function utf8(str){ return new TextEncoder().encode(str); }
+
+function zipar(arquivos){
+  var partes = [], central = [], off = 0;
+  function u16(v){ return [v & 255, (v >> 8) & 255]; }
+  function u32(v){ return [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255]; }
+
+  // data/hora no formato DOS — alguns leitores recusam o zip com data zerada
+  var ag = new Date();
+  var dosHora = (ag.getHours() << 11) | (ag.getMinutes() << 5) | (ag.getSeconds() >> 1);
+  var dosData = ((ag.getFullYear() - 1980) << 9) | ((ag.getMonth() + 1) << 5) | ag.getDate();
+
+  arquivos.forEach(function(a){
+    var nome = utf8(a.nome), dados = a.dados, crc = crc32(dados);
+    var local = [].concat([0x50,0x4b,0x03,0x04], u16(20), u16(0x0800), u16(0),
+                          u16(dosHora), u16(dosData), u32(crc), u32(dados.length), u32(dados.length),
+                          u16(nome.length), u16(0));
+    partes.push(new Uint8Array(local), nome, dados);
+    central.push({ nome:nome, crc:crc, tam:dados.length, off:off });
+    off += local.length + nome.length + dados.length;
+  });
+
+  var dirPartes = [], dirTam = 0;
+  central.forEach(function(c){
+    var h = [].concat([0x50,0x4b,0x01,0x02], u16(20), u16(20), u16(0x0800), u16(0),
+                      u16(dosHora), u16(dosData), u32(c.crc), u32(c.tam), u32(c.tam),
+                      u16(c.nome.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(c.off));
+    dirPartes.push(new Uint8Array(h), c.nome);
+    dirTam += h.length + c.nome.length;
+  });
+  var fim = [].concat([0x50,0x4b,0x05,0x06], u16(0), u16(0),
+                      u16(central.length), u16(central.length), u32(dirTam), u32(off), u16(0));
+  dirPartes.push(new Uint8Array(fim));
+
+  var total = off + dirTam + fim.length;
+  var out = new Uint8Array(total), p = 0;
+  partes.concat(dirPartes).forEach(function(x){ out.set(x, p); p += x.length; });
+  return out;
+}
+
+function xmlEsc(v){
+  return String(v == null ? '' : v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function colLetra(n){
+  var s = '';
+  while(n >= 0){ s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26) - 1; }
+  return s;
+}
+/* Excel conta os dias a partir de 30/12/1899. */
+function serialData(iso){
+  if(!iso) return null;
+  var p = iso.split('-');
+  var d = Date.UTC(+p[0], +p[1] - 1, +p[2]);
+  return Math.round((d - Date.UTC(1899, 11, 30)) / 86400000);
+}
+var ESTILO = { texto:0, cab:1, moeda:2, pct:3, data:4, int:5 };
+
+function xlsxAba(cols, linhas){
+  var largura = '<cols>' + cols.map(function(c, i){
+    return '<col min="' + (i+1) + '" max="' + (i+1) + '" width="' + (c.w || 14) + '" customWidth="1"/>';
+  }).join('') + '</cols>';
+
+  var linhasXml = '<row r="1">' + cols.map(function(c, i){
+    return '<c r="' + colLetra(i) + '1" t="inlineStr" s="' + ESTILO.cab + '"><is><t>' + xmlEsc(c.t) + '</t></is></c>';
+  }).join('') + '</row>';
+
+  linhas.forEach(function(linha, li){
+    var r = li + 2;
+    linhasXml += '<row r="' + r + '">' + linha.map(function(v, i){
+      if(v === null || v === undefined || v === '') return '';
+      var ref = colLetra(i) + r, tipo = cols[i].tipo || 'texto';
+      if(tipo === 'texto'){
+        return '<c r="' + ref + '" t="inlineStr" s="0"><is><t>' + xmlEsc(v) + '</t></is></c>';
+      }
+      if(tipo === 'data'){
+        var sd = serialData(v);
+        return sd == null ? '' : '<c r="' + ref + '" s="' + ESTILO.data + '"><v>' + sd + '</v></c>';
+      }
+      return '<c r="' + ref + '" s="' + ESTILO[tipo] + '"><v>' + (+v || 0) + '</v></c>';
+    }).join('') + '</row>';
+  });
+
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    + largura + '<sheetData>' + linhasXml + '</sheetData></worksheet>';
+}
+
+function xlsxGerar(planilhas){
+  var arqs = [];
+  function add(nome, texto){ arqs.push({ nome:nome, dados:utf8(texto) }); }
+
+  add('[Content_Types].xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+    + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+    + '<Default Extension="xml" ContentType="application/xml"/>'
+    + '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+    + '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+    + planilhas.map(function(p, i){
+        return '<Override PartName="/xl/worksheets/sheet' + (i+1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+      }).join('')
+    + '</Types>');
+
+  add('_rels/.rels',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    + '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+    + '</Relationships>');
+
+  add('xl/workbook.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"'
+    + ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'
+    + planilhas.map(function(p, i){
+        return '<sheet name="' + xmlEsc(p.nome.slice(0,31)) + '" sheetId="' + (i+1) + '" r:id="rId' + (i+1) + '"/>';
+      }).join('')
+    + '</sheets></workbook>');
+
+  add('xl/_rels/workbook.xml.rels',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    + planilhas.map(function(p, i){
+        return '<Relationship Id="rId' + (i+1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i+1) + '.xml"/>';
+      }).join('')
+    + '<Relationship Id="rId' + (planilhas.length+1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+    + '</Relationships>');
+
+  add('xl/styles.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    + '<numFmts count="3">'
+    + '<numFmt numFmtId="164" formatCode="&quot;R$&quot;\\ #,##0.00"/>'
+    + '<numFmt numFmtId="165" formatCode="0.0%"/>'
+    + '<numFmt numFmtId="166" formatCode="dd/mm/yyyy"/>'
+    + '</numFmts>'
+    + '<fonts count="2">'
+    + '<font><sz val="11"/><name val="Calibri"/></font>'
+    + '<font><b/><sz val="11"/><color rgb="FFF7ECCD"/><name val="Calibri"/></font>'
+    + '</fonts>'
+    + '<fills count="3">'
+    + '<fill><patternFill patternType="none"/></fill>'
+    + '<fill><patternFill patternType="gray125"/></fill>'
+    + '<fill><patternFill patternType="solid"><fgColor rgb="FF353A2C"/><bgColor indexed="64"/></patternFill></fill>'
+    + '</fills>'
+    + '<borders count="1"><border/></borders>'
+    + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+    + '<cellXfs count="6">'
+    + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+    + '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'
+    + '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'
+    + '<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'
+    + '<xf numFmtId="166" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'
+    + '<xf numFmtId="1" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'
+    + '</cellXfs>'
+    + '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+    + '</styleSheet>');
+
+  planilhas.forEach(function(p, i){
+    add('xl/worksheets/sheet' + (i+1) + '.xml', xlsxAba(p.colunas, p.linhas));
+  });
+
+  return zipar(arqs);
+}
+
+/* ================= montagem dos relatórios ================= */
+function relPeriodo(){
+  var n = +document.getElementById('rPeriodo').value;
+  var todos = mesesComDados();
+  if(n === 0) return todos;
+  var i = todos.indexOf(filtroMes);
+  if(i < 0) i = todos.length - 1;
+  return todos.slice(Math.max(0, i - (n - 1)), i + 1);
+}
+function relEsp(){ return document.getElementById('rEsp').value; }
+function relFiltra(arr){
+  var e = relEsp();
+  return e ? arr.filter(function(x){ return x.especialidade === e; }) : arr;
+}
+function metricasRel(mes){
+  var espAntes = filtroEsp;
+  filtroEsp = relEsp();
+  var m = metricas(mes);
+  filtroEsp = espAntes;
+  return m;
+}
+
+var REL_ABAS = [
+  { id:'resumo',    nome:'Resumo mensal', desc:'Um mês por linha, com todos os indicadores do painel' },
+  { id:'abordagens',nome:'Abordagens',    desc:'Lançamento a lançamento do funil de captação' },
+  { id:'negociacoes',nome:'Negociações',  desc:'Cada oferta de procedimento e seu desfecho' },
+  { id:'detalhe',   nome:'Detalhamento',  desc:'Faturamento por procedimento e tecnologia, mês a mês' },
+  { id:'canais',    nome:'Origem',        desc:'Abordagens por canal, mês a mês' }
+];
+
+function montarAba(id){
+  var meses = relPeriodo();
+  if(id === 'resumo'){
+    return {
+      nome:'Resumo mensal',
+      colunas:[
+        {t:'Mês', tipo:'texto', w:10},
+        {t:'Abordagens', tipo:'int', w:12},
+        {t:'Consultas agendadas', tipo:'int', w:19},
+        {t:'Compareceram', tipo:'int', w:14},
+        {t:'Conv. consultas', tipo:'pct', w:15},
+        {t:'Comparecimento', tipo:'pct', w:15},
+        {t:'Procedimentos ofertados', tipo:'int', w:22},
+        {t:'Fechados', tipo:'int', w:10},
+        {t:'Perdidos', tipo:'int', w:10},
+        {t:'Em negociação', tipo:'int', w:14},
+        {t:'Conv. procedimentos', tipo:'pct', w:19},
+        {t:'Ticket médio', tipo:'moeda', w:14},
+        {t:'Faturamento', tipo:'moeda', w:15},
+        {t:'Pacientes novos', tipo:'int', w:15},
+        {t:'Pacientes antigos', tipo:'int', w:16}
+      ],
+      linhas: meses.map(function(mes){
+        var m = metricasRel(mes);
+        return [rotuloMes(mes), m.abordagens, m.agendadas, m.compareceram, m.convConsulta,
+                m.comparecimento, m.ofertados, m.fechados, m.perdidos, m.emNegociacao,
+                m.convProc, m.ticket, m.faturamento, m.novos, m.antigos];
+      })
+    };
+  }
+  if(id === 'abordagens'){
+    return {
+      nome:'Abordagens',
+      colunas:[
+        {t:'Data do contato', tipo:'data', w:16},
+        {t:'Mês', tipo:'texto', w:10},
+        {t:'Paciente', tipo:'texto', w:26},
+        {t:'Especialidade', tipo:'texto', w:15},
+        {t:'Tipo de paciente', tipo:'texto', w:16},
+        {t:'Canal de origem', tipo:'texto', w:18},
+        {t:'Agendou', tipo:'texto', w:10},
+        {t:'Data da consulta', tipo:'data', w:16},
+        {t:'Compareceu', tipo:'texto', w:13},
+        {t:'Atendente', tipo:'texto', w:14},
+        {t:'Observações', tipo:'texto', w:34}
+      ],
+      linhas: relFiltra(db.abordagens)
+        .filter(function(a){ return meses.indexOf(mesDe(a.data)) >= 0; })
+        .sort(function(a, b){ return a.data.localeCompare(b.data); })
+        .map(function(a){
+          return [a.data, rotuloMes(mesDe(a.data)), a.paciente, a.especialidade, a.tipo,
+                  a.origem, a.agendou, a.dataConsulta, a.compareceu || 'A confirmar',
+                  a.atendente, a.obs];
+        })
+    };
+  }
+  if(id === 'negociacoes'){
+    return {
+      nome:'Negociações',
+      colunas:[
+        {t:'Data da oferta', tipo:'data', w:15},
+        {t:'Mês', tipo:'texto', w:10},
+        {t:'Paciente', tipo:'texto', w:26},
+        {t:'Especialidade', tipo:'texto', w:15},
+        {t:'Procedimento', tipo:'texto', w:28},
+        {t:'Tecnologia', tipo:'texto', w:22},
+        {t:'Valor ofertado', tipo:'moeda', w:15},
+        {t:'Status', tipo:'texto', w:15},
+        {t:'Valor fechado', tipo:'moeda', w:15},
+        {t:'Motivo da perda', tipo:'texto', w:24},
+        {t:'Atendente', tipo:'texto', w:14}
+      ],
+      linhas: relFiltra(db.negociacoes)
+        .filter(function(n){ return meses.indexOf(mesDe(n.data)) >= 0; })
+        .sort(function(a, b){ return a.data.localeCompare(b.data); })
+        .map(function(n){
+          var p = db.procedimentos.filter(function(x){ return x.id === n.procedimentoId; })[0];
+          return [n.data, rotuloMes(mesDe(n.data)), n.paciente, n.especialidade,
+                  p ? p.nome : '—', p ? p.tecnologia : '—',
+                  n.valorOfertado, n.status,
+                  n.status === 'Fechado' ? n.valorFechado : null,
+                  n.motivoPerda, n.atendente];
+        })
+    };
+  }
+  if(id === 'detalhe'){
+    var linhas = [];
+    meses.forEach(function(mes){
+      var ng = relFiltra(db.negociacoes).filter(function(n){ return mesDe(n.data) === mes; });
+      var totalFat = ng.filter(function(n){ return n.status === 'Fechado'; })
+                       .reduce(function(a, n){ return a + (+n.valorFechado || 0); }, 0);
+      db.procedimentos.forEach(function(p){
+        var doProc = ng.filter(function(n){ return n.procedimentoId === p.id; });
+        if(!doProc.length) return;
+        var fech = doProc.filter(function(n){ return n.status === 'Fechado'; });
+        var fat = fech.reduce(function(a, n){ return a + (+n.valorFechado || 0); }, 0);
+        linhas.push([rotuloMes(mes), p.nome, p.tecnologia, p.especialidade,
+                     doProc.length, fech.length,
+                     doProc.length ? fech.length / doProc.length : 0,
+                     fat, fech.length ? fat / fech.length : 0,
+                     totalFat ? fat / totalFat : 0]);
+      });
+    });
+    return {
+      nome:'Detalhamento',
+      colunas:[
+        {t:'Mês', tipo:'texto', w:10},
+        {t:'Procedimento', tipo:'texto', w:28},
+        {t:'Tecnologia', tipo:'texto', w:22},
+        {t:'Especialidade', tipo:'texto', w:15},
+        {t:'Ofertados', tipo:'int', w:11},
+        {t:'Fechados', tipo:'int', w:10},
+        {t:'Conversão', tipo:'pct', w:12},
+        {t:'Faturamento', tipo:'moeda', w:15},
+        {t:'Ticket médio', tipo:'moeda', w:14},
+        {t:'% do faturamento', tipo:'pct', w:17}
+      ],
+      linhas: linhas
+    };
+  }
+  // canais
+  var lin = [];
+  meses.forEach(function(mes){
+    var m = metricasRel(mes);
+    var tot = m.abordagens;
+    Object.keys(m.canais).sort(function(a, b){ return m.canais[b] - m.canais[a]; }).forEach(function(c){
+      lin.push([rotuloMes(mes), c, m.canais[c], tot ? m.canais[c] / tot : 0]);
+    });
+  });
+  return {
+    nome:'Origem',
+    colunas:[
+      {t:'Mês', tipo:'texto', w:10},
+      {t:'Canal de origem', tipo:'texto', w:20},
+      {t:'Abordagens', tipo:'int', w:12},
+      {t:'% do mês', tipo:'pct', w:11}
+    ],
+    linhas: lin
+  };
+}
+
+function abasEscolhidas(){
+  return REL_ABAS.filter(function(a){
+    var el = document.getElementById('rAba_' + a.id);
+    return el && el.checked;
+  });
+}
+function renderRelatorios(){
+  var caixas = document.getElementById('rAbas');
+  if(!caixas.children.length){
+    caixas.innerHTML = REL_ABAS.map(function(a){
+      return '<label style="display:flex;gap:9px;align-items:flex-start;text-transform:none;letter-spacing:0;font-size:14px;color:var(--tinta);cursor:pointer">'
+           + '<input type="checkbox" id="rAba_' + a.id + '" checked style="width:auto;margin-top:3px" onchange="renderRelatorios()">'
+           + '<span><b style="font-weight:500">' + a.nome + '</b><br>'
+           + '<span style="font-size:12.5px;color:var(--tinta-3)">' + a.desc + '</span></span></label>';
+    }).join('');
+  }
+  var meses = relPeriodo();
+  var escolhidas = abasEscolhidas();
+  document.getElementById('rPreview').innerHTML = escolhidas.length
+    ? escolhidas.map(function(a){
+        var p = montarAba(a.id);
+        return '<tr><td><b>' + esc(p.nome) + '</b></td><td>' + esc(a.desc) + '</td>'
+             + '<td class="num">' + p.linhas.length + '</td></tr>';
+      }).join('')
+    : '<tr><td colspan="3" class="empty">Selecione ao menos uma aba.</td></tr>';
+
+  document.getElementById('rAviso').textContent =
+    meses.length + (meses.length === 1 ? ' mês' : ' meses') + ' no arquivo: '
+    + rotuloMes(meses[0]) + ' a ' + rotuloMes(meses[meses.length - 1])
+    + (relEsp() ? ' · apenas ' + relEsp() : '') + '.';
+}
+
+function nomeArquivo(ext){
+  var meses = relPeriodo();
+  var faixa = meses.length === 1 ? meses[0] : (meses[0] + '_a_' + meses[meses.length - 1]);
+  return 'crm-hyllua-' + faixa + '.' + ext;
+}
+function baixarExcel(){
+  var escolhidas = abasEscolhidas();
+  if(!escolhidas.length){ alert('Selecione ao menos uma aba.'); return; }
+  var bytes = xlsxGerar(escolhidas.map(function(a){ return montarAba(a.id); }));
+  entregarArquivo(nomeArquivo('xlsx'), bytes,
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+}
+function baixarCSV(){
+  var p = montarAba('resumo');
+  // ponto e vírgula e BOM: é o que o Excel em português abre já separado em colunas
+  var linhas = [p.colunas.map(function(c){ return c.t; }).join(';')];
+  p.linhas.forEach(function(l){
+    linhas.push(l.map(function(v, i){
+      var tipo = p.colunas[i].tipo;
+      if(v == null) return '';
+      if(tipo === 'texto') return '"' + String(v).replace(/"/g, '""') + '"';
+      if(tipo === 'pct') return (v * 100).toFixed(1).replace('.', ',');
+      if(tipo === 'moeda') return (+v).toFixed(2).replace('.', ',');
+      return v;
+    }).join(';'));
+  });
+  entregarArquivo(nomeArquivo('csv'), '﻿' + linhas.join('\r\n'), 'text/csv');
+}
+
 /* ---------- backup ---------- */
 /* Dentro do visualizador de artifacts, o download passa pela capacidade
    "downloads" (o visitante confirma). Aberto como arquivo local ou no
@@ -1443,8 +1869,22 @@ var salvarArquivo = null;
 if(window.claude && typeof claude.use === 'function'){
   claude.use('downloads').then(function(d){ salvarArquivo = d; }).catch(function(){});
 }
-function baixarLocal(nome, texto){
-  var blob = new Blob([texto], {type:'application/json'});
+function entregarArquivo(nome, dados, mime){
+  if(salvarArquivo){
+    salvarArquivo.save({ filename:nome, data:dados }).catch(function(err){
+      var c = err && err.code;
+      if(c === 'declined') return;
+      if(c === 'rejected_extension'){
+        alert('O visualizador do Claude não aceita baixar .xlsx.\n\n'
+            + 'Use o CSV aqui, ou abra o sistema pelo endereço do GitHub Pages,\n'
+            + 'onde o Excel baixa normalmente.');
+        return;
+      }
+      alert('Não foi possível salvar o arquivo' + (err && err.message ? ': ' + err.message : '.'));
+    });
+    return;
+  }
+  var blob = new Blob([dados], { type: mime || 'application/octet-stream' });
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = nome;
@@ -1452,16 +1892,7 @@ function baixarLocal(nome, texto){
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
 function exportar(){
-  var nome = 'crm-hyllua-' + hoje() + '.json';
-  var texto = JSON.stringify(db, null, 2);
-  if(salvarArquivo){
-    salvarArquivo.save({filename:nome, data:texto}).catch(function(err){
-      if(err && err.code === 'declined') return;
-      alert('Não foi possível salvar o backup' + (err && err.message ? ': ' + err.message : '.'));
-    });
-    return;
-  }
-  baixarLocal(nome, texto);
+  entregarArquivo('crm-hyllua-' + hoje() + '.json', JSON.stringify(db, null, 2), 'application/json');
 }
 function importar(input){
   var f = input.files[0]; if(!f) return;
@@ -1504,7 +1935,7 @@ function trocarView(v){
     b.setAttribute('aria-selected', String(b.dataset.v === v));
   });
   var fab = document.getElementById('fab');
-  fab.classList.toggle('hidden', v === 'inicio' || v === 'ajustes');
+  fab.classList.toggle('hidden', v === 'inicio' || v === 'ajustes' || v === 'relatorios');
   fab.textContent = v === 'negociacoes' ? '+ Oferta' : '+ Abordagem';
   window.scrollTo(0,0);
 }
