@@ -462,11 +462,16 @@ footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
       <button class="btn ghost" onclick="document.getElementById('impCsv').click()">Importar CSV</button>
       <input type="file" id="impCsv" accept=".csv,text/csv,text/plain" class="hidden" onchange="importarPacientes(this)">
       <input id="pBusca" placeholder="Buscar por nome, telefone ou e-mail" oninput="pLimite=60;renderPacientes()" style="max-width:340px;margin-left:auto">
+      <select id="pOrdem" onchange="pLimite=60;renderPacientes()" style="max-width:190px" aria-label="Ordenar por">
+        <option value="nome">Ordem alfabética</option>
+        <option value="valor">Maior valor fechado</option>
+        <option value="recente">Contato mais recente</option>
+      </select>
     </div>
     <p class="hint" id="pResumo" style="margin:-6px 0 12px"></p>
     <div class="tw">
       <table>
-        <thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Sexo</th><th class="num">Idade</th><th class="num">Abord.</th><th class="num">Ofertas</th><th></th></tr></thead>
+        <thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Sexo</th><th class="num">Idade</th><th class="num">Abord.</th><th class="num">Fechadas</th><th class="num">Total fechado</th><th></th></tr></thead>
         <tbody id="tPacientes"></tbody>
       </table>
     </div>
@@ -1374,11 +1379,24 @@ function renderPacientes(){
     db.pacientes.length + ' paciente' + (db.pacientes.length === 1 ? '' : 's') + ' na base'
     + (q ? ' · ' + lista.length + ' na busca' : '');
 
-  // contagem de histórico por paciente, uma passada só
-  var cAb = {}, cNg = {};
-  db.abordagens.forEach(function(a){ var k = a.pacienteId || 'n:' + normTxt(a.paciente); cAb[k] = (cAb[k] || 0) + 1; });
-  db.negociacoes.forEach(function(n){ var k = n.pacienteId || 'n:' + normTxt(n.paciente); cNg[k] = (cNg[k] || 0) + 1; });
+  // histórico por paciente numa passada só: abordagens, fechadas, valor fechado e último contato
+  var cAb = {}, cFe = {}, cVal = {}, cUlt = {};
+  function acum(m, k, v){ m[k] = (m[k] || 0) + v; }
+  db.abordagens.forEach(function(a){
+    var k = a.pacienteId || 'n:' + normTxt(a.paciente);
+    acum(cAb, k, 1); if(!cUlt[k] || a.data > cUlt[k]) cUlt[k] = a.data;
+  });
+  db.negociacoes.forEach(function(n){
+    var k = n.pacienteId || 'n:' + normTxt(n.paciente);
+    if(!cUlt[k] || n.data > cUlt[k]) cUlt[k] = n.data;
+    if(n.status === 'Fechado'){ acum(cFe, k, 1); acum(cVal, k, +n.valorFechado || 0); }
+  });
   function cont(m, p){ return (m[p.id] || 0) + (m['n:' + normTxt(p.nome)] || 0); }
+  function ultimo(p){ var a = cUlt[p.id] || '', b = cUlt['n:' + normTxt(p.nome)] || ''; return a > b ? a : b; }
+
+  var ordem = document.getElementById('pOrdem').value;
+  if(ordem === 'valor') lista.sort(function(a, b){ return cont(cVal, b) - cont(cVal, a) || a.nome.localeCompare(b.nome, 'pt-BR'); });
+  else if(ordem === 'recente') lista.sort(function(a, b){ return ultimo(b).localeCompare(ultimo(a)) || a.nome.localeCompare(b.nome, 'pt-BR'); });
 
   var tb = document.getElementById('tPacientes');
   if(!lista.length){
@@ -1395,7 +1413,8 @@ function renderPacientes(){
          + '<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">' + (p.email ? esc(p.email) : '<span style="color:var(--tinta-3)">—</span>') + '</td>'
          + '<td>' + (p.sexo ? esc(p.sexo.charAt(0)) : '—') + '</td>'
          + '<td class="num">' + (p.idade || '—') + '</td>'
-         + '<td class="num">' + (cont(cAb, p) || '') + '</td><td class="num">' + (cont(cNg, p) || '') + '</td>'
+         + '<td class="num">' + (cont(cAb, p) || '') + '</td><td class="num">' + (cont(cFe, p) || '') + '</td>'
+         + '<td class="num">' + (cont(cVal, p) ? '<b>' + brl(cont(cVal, p)) + '</b>' : '') + '</td>'
          + '<td><button class="linkish" onclick="abrirPaciente(\'' + p.id + '\')">ver</button></td></tr>';
   }).join('');
   document.getElementById('pMais').classList.toggle('hidden', lista.length <= pLimite);
@@ -1418,7 +1437,15 @@ function abrirPaciente(id){
 
   if(p){
     var h = historicoPaciente(p);
+    var fechadas = h.negociacoes.filter(function(n){ return n.status === 'Fechado'; });
+    var totalFechado = fechadas.reduce(function(a, n){ return a + (+n.valorFechado || 0); }, 0);
     html += '<div class="hist">';
+    html += '<div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-top:14px">'
+      + '<div class="kpi"><p class="k">Total fechado</p><p class="v" style="font-size:22px">' + brl(totalFechado) + '</p></div>'
+      + '<div class="kpi"><p class="k">Procedimentos</p><p class="v" style="font-size:22px">' + fechadas.length + '</p>'
+      + '<p class="base">de ' + h.negociacoes.length + ' ofertado' + (h.negociacoes.length === 1 ? '' : 's') + '</p></div>'
+      + '<div class="kpi"><p class="k">Ticket médio</p><p class="v" style="font-size:22px">' + (fechadas.length ? brl(totalFechado / fechadas.length) : '—') + '</p></div>'
+      + '</div>';
     html += '<h4>Abordagens (' + h.abordagens.length + ')</h4><ul>' + (h.abordagens.length ? h.abordagens.slice(0, 8).map(function(a){
       return '<li><span>' + dataBR(a.data) + '</span><span>' + esc(a.origem) + '</span>'
            + '<span>' + (a.agendou === 'Sim' ? 'agendou' : 'não agendou') + (a.compareceu === 'Não' ? ' · no-show' : '') + '</span>'
@@ -2172,12 +2199,16 @@ function montarAba(id){
         {t:'Nome', tipo:'texto', w:30}, {t:'Telefone', tipo:'texto', w:17}, {t:'Telefone 2', tipo:'texto', w:17},
         {t:'E-mail', tipo:'texto', w:30}, {t:'Sexo', tipo:'texto', w:12}, {t:'Idade', tipo:'int', w:8},
         {t:'Abordagens', tipo:'int', w:12}, {t:'Ofertas', tipo:'int', w:10},
+        {t:'Fechadas', tipo:'int', w:10}, {t:'Total fechado', tipo:'moeda', w:15},
         {t:'Origem do cadastro', tipo:'texto', w:18}, {t:'Observações', tipo:'texto', w:34}
       ],
       linhas: db.pacientes.slice().sort(function(a, b){ return a.nome.localeCompare(b.nome, 'pt-BR'); }).map(function(p){
         var h = historicoPaciente(p);
+        var fech = h.negociacoes.filter(function(n){ return n.status === 'Fechado'; });
         return [p.nome, p.telefone, p.telefone2, p.email, p.sexo, p.idade === '' ? null : p.idade,
-                h.abordagens.length, h.negociacoes.length, p.origem, p.obs];
+                h.abordagens.length, h.negociacoes.length,
+                fech.length, fech.reduce(function(a, n){ return a + (+n.valorFechado || 0); }, 0),
+                p.origem, p.obs];
       })
     };
   }
