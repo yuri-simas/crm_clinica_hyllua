@@ -300,6 +300,37 @@ body.deslogado header, body.deslogado main, body.deslogado .fab{display:none}
 .minitbl tr:last-child td{border-bottom:none}
 .vazio{color:var(--tinta-3); font-size:12.5px; margin:0; padding:16px 0; text-align:center}
 
+/* ---------- pacientes ---------- */
+.sug{
+  position:absolute; left:0; right:0; top:100%; z-index:5;
+  background:var(--surface); border:1px solid var(--line-2); border-top:0;
+  border-radius:0 0 var(--r) var(--r); max-height:230px; overflow-y:auto;
+  box-shadow:0 8px 20px -10px rgba(53,58,44,.35);
+}
+.sug:empty{display:none}
+.sug button{
+  display:block; width:100%; text-align:left; background:none; border:0;
+  padding:8px 11px; cursor:pointer; font-size:14px; line-height:1.3;
+  border-bottom:1px solid var(--line);
+}
+.sug button:last-child{border-bottom:0}
+.sug button:hover, .sug button:focus{background:var(--surface-2); outline:none}
+.sug small{display:block; color:var(--tinta-3); font-size:11.5px}
+.sug .novo{color:var(--terracota)}
+.pacwrap{position:relative}
+.pacflag{font-size:11.5px; margin-top:5px; min-height:16px}
+.pacflag.ok{color:var(--ok)} .pacflag.novo{color:var(--terracota)}
+.hist{margin-top:18px}
+.hist h4{font-family:var(--sans); font-weight:500; font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--tinta-3); margin:14px 0 6px}
+.hist ul{list-style:none; margin:0; padding:0; font-size:13px}
+.hist li{padding:6px 0; border-bottom:1px solid var(--line); display:flex; gap:10px; flex-wrap:wrap}
+.hist li:last-child{border-bottom:0}
+.hist li span:first-child{color:var(--tinta-3); min-width:44px; font-variant-numeric:tabular-nums}
+.impres{display:grid; gap:8px; margin:10px 0 4px}
+.impres div{display:flex; justify-content:space-between; gap:12px; font-size:14px; padding:7px 0; border-bottom:1px solid var(--line)}
+.impres div:last-child{border-bottom:0}
+.impres b{font-variant-numeric:tabular-nums}
+
 footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
 </style>
 
@@ -419,6 +450,28 @@ footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
         </tr></thead>
         <tbody id="tNegociacoes"></tbody>
       </table>
+    </div>
+  </section>
+
+  <!-- ================= PACIENTES ================= -->
+  <section class="view" id="v-pacientes">
+    <h1>Pacientes</h1>
+    <p class="sub">Base de contatos da clínica. Só nome, contato e o histórico comercial — nenhum dado clínico entra aqui.</p>
+    <div class="bar-actions">
+      <button class="btn" onclick="abrirPaciente()">+ Novo paciente</button>
+      <button class="btn ghost" onclick="document.getElementById('impCsv').click()">Importar CSV</button>
+      <input type="file" id="impCsv" accept=".csv,text/csv,text/plain" class="hidden" onchange="importarPacientes(this)">
+      <input id="pBusca" placeholder="Buscar por nome, telefone ou e-mail" oninput="pLimite=60;renderPacientes()" style="max-width:340px;margin-left:auto">
+    </div>
+    <p class="hint" id="pResumo" style="margin:-6px 0 12px"></p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Sexo</th><th class="num">Idade</th><th class="num">Abord.</th><th class="num">Ofertas</th><th></th></tr></thead>
+        <tbody id="tPacientes"></tbody>
+      </table>
+    </div>
+    <div class="bar-actions" style="justify-content:center;margin-top:12px">
+      <button class="btn ghost sm hidden" id="pMais" onclick="pLimite+=60;renderPacientes()">Mostrar mais</button>
     </div>
   </section>
 
@@ -562,6 +615,7 @@ var TABS = [
   { v:'inicio',      label:'Início',      perfis:['gestao'] },
   { v:'abordagens',  label:'Abordagens',  perfis:['gestao','operador'] },
   { v:'negociacoes', label:'Negociações', perfis:['gestao','operador'] },
+  { v:'pacientes',   label:'Pacientes',   perfis:['gestao','operador'] },
   { v:'relatorios',  label:'Relatórios',  perfis:['gestao'] },
   { v:'ajustes',     label:'Ajustes',     perfis:['gestao'] }
 ];
@@ -622,6 +676,7 @@ function migrar(){
   if(!Array.isArray(db.procedimentos)){ db.procedimentos = []; mudou = true; }
   if(!Array.isArray(db.abordagens)){ db.abordagens = []; mudou = true; }
   if(!Array.isArray(db.negociacoes)){ db.negociacoes = []; mudou = true; }
+  if(!Array.isArray(db.pacientes)){ db.pacientes = []; mudou = true; }
   // o acesso de Gestão passou a nascer sem nome; limpa o que a versão
   // anterior já tinha gravado, sem mexer em nome escolhido pelo cliente
   db.usuarios.forEach(function(u){
@@ -656,7 +711,8 @@ function semear(forcar){
     origens: ['WhatsApp','Instagram','Indicação','Google','Tráfego pago','Presencial','Retorno de paciente'],
     atendentes: ['Brenda','Camila','Bruna'],
     abordagens: [],
-    negociacoes: []
+    negociacoes: [],
+    pacientes: []     // base real vem por importação; não semeamos paciente fictício
   };
 
   var nomes = ['Ana Paula Souza','Ricardo Melo','Fernanda Lima','Juliana Prado','Marcos Vieira','Carla Bastos','Patrícia Nunes','Rodrigo Alves','Beatriz Campos','Letícia Moraes','Vanessa Duarte','Thiago Ramos','Sofia Andrade','Renata Pires','Gustavo Faria','Mariana Rocha','Débora Cruz','Felipe Tavares','Camila Reis','Luana Freitas','Bruno Sales','Aline Cardoso','Paula Menezes','Diego Barros'];
@@ -1218,7 +1274,7 @@ function render(){
   if(sessao.perfil === 'gestao'){
     renderKpis(); renderGraficos(); renderOrigem(); renderDetalhe(); renderRelatorios(); renderAjustes();
   }
-  renderAbordagens(); renderNegociacoes();
+  renderAbordagens(); renderNegociacoes(); renderPacientes();
 }
 
 /* ---------- modal ---------- */
@@ -1230,6 +1286,7 @@ function abrirModal(titulo, html, onSalvar, onExcluir){
   var bx = document.getElementById('mExcluir');
   bx.classList.toggle('hidden', !onExcluir);
   bx.onclick = onExcluir || null;
+  var bs = document.getElementById('mSalvar'); bs.textContent = 'Salvar'; bs.disabled = false;
   salvarHandler = onSalvar;
   document.getElementById('overlay').classList.add('on');
   var f = document.querySelector('#mCorpo input, #mCorpo select');
@@ -1248,16 +1305,332 @@ function campo(label, inner, dica){
   return '<div><label>' + label + '</label>' + inner + (dica ? '<p class="hint">' + dica + '</p>' : '') + '</div>';
 }
 
+
+/* ================= pacientes ================= */
+var pLimite = 60;
+
+function normTxt(s){
+  return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().replace(/\s+/g, ' ').trim();
+}
+function soDigitos(s){ return String(s || '').replace(/\D/g, ''); }
+/* Formata telefone brasileiro; devolve '' se não parecer telefone. */
+function fmtFone(raw){
+  var d = soDigitos(raw);
+  if(d.length === 13 && d.slice(0,2) === '55') d = d.slice(2);
+  if(d.length === 12 && d.slice(0,2) === '55') d = d.slice(2);
+  if(d.length === 11) return '(' + d.slice(0,2) + ') ' + d.slice(2,7) + '-' + d.slice(7);
+  if(d.length === 10) return '(' + d.slice(0,2) + ') ' + d.slice(2,6) + '-' + d.slice(6);
+  return '';
+}
+/* Extrai até dois telefones de uma célula que pode vir com vários. */
+function extrairFones(raw){
+  raw = String(raw || '');
+  if(/e\+\d/i.test(raw)) return { fones:[], invalido:raw };    // "9,99999E+99": o Excel destruiu o número
+  // um telefone por vez: DDD opcional, 8 ou 9 dígitos — assim "(51) 9... (51) 9..." vira dois
+  var achados = raw.match(/(?:\+?55\s?)?\(?\d{2}\)?\s?\d{4,5}[-\s]?\d{4}/g) || [];
+  var fones = [];
+  achados.forEach(function(a){ var f = fmtFone(a); if(f && fones.indexOf(f) < 0) fones.push(f); });
+  return { fones:fones.slice(0,2), invalido: (!fones.length && soDigitos(raw)) ? raw : '' };
+}
+/* Duplicidade é por NOME. Telefone não serve de chave: mãe e filha
+   compartilham o mesmo número e são pacientes diferentes. */
+function chavePaciente(p){ return 'n:' + normTxt(p.nome); }
+function acharPaciente(id){ return db.pacientes.filter(function(p){ return p.id === id; })[0] || null; }
+function acharPacientePorNome(nome){
+  var n = normTxt(nome);
+  return n ? (db.pacientes.filter(function(p){ return normTxt(p.nome) === n; })[0] || null) : null;
+}
+/* Garante que exista um paciente com esse nome; cria se não houver. */
+function garantirPaciente(nome, origem){
+  var p = acharPacientePorNome(nome);
+  if(p) return p;
+  p = { id:uid(), nome:String(nome).trim(), sexo:'', idade:'', telefone:'', telefone2:'', email:'', obs:'',
+        origem:origem || 'lançamento', criadoEm:hoje() };
+  db.pacientes.push(p);
+  return p;
+}
+/* Registros de abordagem/negociação de um paciente: pelo id, ou pelo nome nos antigos. */
+function historicoPaciente(p){
+  var n = normTxt(p.nome);
+  function liga(x){ return x.pacienteId ? x.pacienteId === p.id : normTxt(x.paciente) === n; }
+  return {
+    abordagens: db.abordagens.filter(liga).sort(function(a, b){ return b.data.localeCompare(a.data); }),
+    negociacoes: db.negociacoes.filter(liga).sort(function(a, b){ return b.data.localeCompare(a.data); })
+  };
+}
+
+function renderPacientes(){
+  var q = normTxt(document.getElementById('pBusca').value);
+  var qd = soDigitos(q);
+  var lista = db.pacientes.filter(function(p){
+    if(!q) return true;
+    return normTxt(p.nome).indexOf(q) >= 0
+        || (qd.length >= 3 && (soDigitos(p.telefone).indexOf(qd) >= 0 || soDigitos(p.telefone2).indexOf(qd) >= 0))
+        || normTxt(p.email).indexOf(q) >= 0;
+  }).sort(function(a, b){ return a.nome.localeCompare(b.nome, 'pt-BR'); });
+
+  document.getElementById('pResumo').textContent =
+    db.pacientes.length + ' paciente' + (db.pacientes.length === 1 ? '' : 's') + ' na base'
+    + (q ? ' · ' + lista.length + ' na busca' : '');
+
+  // contagem de histórico por paciente, uma passada só
+  var cAb = {}, cNg = {};
+  db.abordagens.forEach(function(a){ var k = a.pacienteId || 'n:' + normTxt(a.paciente); cAb[k] = (cAb[k] || 0) + 1; });
+  db.negociacoes.forEach(function(n){ var k = n.pacienteId || 'n:' + normTxt(n.paciente); cNg[k] = (cNg[k] || 0) + 1; });
+  function cont(m, p){ return (m[p.id] || 0) + (m['n:' + normTxt(p.nome)] || 0); }
+
+  var tb = document.getElementById('tPacientes');
+  if(!lista.length){
+    tb.innerHTML = '<tr><td colspan="8" class="empty">' + (db.pacientes.length
+      ? 'Nenhum paciente encontrado para essa busca.'
+      : 'Nenhum paciente na base. Importe o CSV exportado do sistema da clínica ou cadastre manualmente.') + '</td></tr>';
+    document.getElementById('pMais').classList.add('hidden');
+    return;
+  }
+  tb.innerHTML = lista.slice(0, pLimite).map(function(p){
+    var tel = p.telefone ? esc(p.telefone) + (p.telefone2 ? ' <span style="color:var(--tinta-3)">+1</span>' : '')
+                         : '<span style="color:var(--tinta-3)">—</span>';
+    return '<tr><td>' + esc(p.nome) + '</td><td style="white-space:nowrap">' + tel + '</td>'
+         + '<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">' + (p.email ? esc(p.email) : '<span style="color:var(--tinta-3)">—</span>') + '</td>'
+         + '<td>' + (p.sexo ? esc(p.sexo.charAt(0)) : '—') + '</td>'
+         + '<td class="num">' + (p.idade || '—') + '</td>'
+         + '<td class="num">' + (cont(cAb, p) || '') + '</td><td class="num">' + (cont(cNg, p) || '') + '</td>'
+         + '<td><button class="linkish" onclick="abrirPaciente(\'' + p.id + '\')">ver</button></td></tr>';
+  }).join('');
+  document.getElementById('pMais').classList.toggle('hidden', lista.length <= pLimite);
+  document.getElementById('pMais').textContent = 'Mostrar mais (' + (lista.length - Math.min(pLimite, lista.length)) + ' restantes)';
+}
+
+/* ---------- ficha do paciente ---------- */
+function abrirPaciente(id){
+  var p = id ? acharPaciente(id) : null;
+  var d = p || { nome:'', sexo:'', idade:'', telefone:'', telefone2:'', email:'', obs:'' };
+  var html = '<div class="fields two">'
+    + campo('Nome', '<input id="f_nome" value="' + esc(d.nome) + '">')
+    + campo('Telefone', '<input id="f_tel" value="' + esc(d.telefone) + '" inputmode="tel" placeholder="(51) 99999-9999">')
+    + campo('Segundo telefone', '<input id="f_tel2" value="' + esc(d.telefone2) + '" inputmode="tel">')
+    + campo('E-mail', '<input id="f_email" value="' + esc(d.email) + '" inputmode="email">')
+    + campo('Sexo', '<select id="f_sexo">' + opcoes([{v:'',t:'Não informado'},'Feminino','Masculino'], d.sexo) + '</select>')
+    + campo('Idade', '<input type="number" id="f_idade" min="0" max="120" value="' + esc(d.idade) + '">')
+    + '</div>'
+    + '<div style="margin-top:12px">' + campo('Observações', '<textarea id="f_obs">' + esc(d.obs) + '</textarea>') + '</div>';
+
+  if(p){
+    var h = historicoPaciente(p);
+    html += '<div class="hist">';
+    html += '<h4>Abordagens (' + h.abordagens.length + ')</h4><ul>' + (h.abordagens.length ? h.abordagens.slice(0, 8).map(function(a){
+      return '<li><span>' + dataBR(a.data) + '</span><span>' + esc(a.origem) + '</span>'
+           + '<span>' + (a.agendou === 'Sim' ? 'agendou' : 'não agendou') + (a.compareceu === 'Não' ? ' · no-show' : '') + '</span>'
+           + '<span style="color:var(--tinta-3)">' + esc(a.atendente) + '</span></li>';
+    }).join('') : '<li style="color:var(--tinta-3)">Nenhuma.</li>') + '</ul>';
+    html += '<h4>Ofertas (' + h.negociacoes.length + ')</h4><ul>' + (h.negociacoes.length ? h.negociacoes.slice(0, 8).map(function(n){
+      var cls = n.status === 'Fechado' ? 'p-ok' : (n.status === 'Perdido' ? 'p-bad' : 'p-warn');
+      return '<li><span>' + dataBR(n.data) + '</span><span>' + esc(nomeProc(n.procedimentoId)) + '</span>'
+           + '<span class="pill ' + cls + '">' + esc(n.status) + '</span>'
+           + '<span>' + (n.status === 'Fechado' ? brl(n.valorFechado) : brl(n.valorOfertado)) + '</span></li>';
+    }).join('') : '<li style="color:var(--tinta-3)">Nenhuma.</li>') + '</ul>';
+    html += '<p class="hint">Cadastro ' + (p.origem === 'importado' ? 'importado do sistema da clínica' : 'criado ' + (p.origem === 'manual' ? 'manualmente' : 'a partir de um lançamento')) + (p.criadoEm ? ' em ' + dataBR(p.criadoEm) + '/' + p.criadoEm.slice(0,4) : '') + '.</p></div>';
+  }
+
+  abrirModal(p ? 'Paciente' : 'Novo paciente', html, function(){
+    var nome = val('f_nome');
+    if(!nome){ alert('Informe o nome.'); return; }
+    var outro = acharPacientePorNome(nome);
+    if(outro && (!p || outro.id !== p.id)){ alert('Já existe um paciente com esse nome. Abra o cadastro dele em vez de criar outro.'); return; }
+    var reg = {
+      id: p ? p.id : uid(),
+      nome: nome,
+      telefone: fmtFone(val('f_tel')) || val('f_tel'),
+      telefone2: fmtFone(val('f_tel2')) || val('f_tel2'),
+      email: val('f_email').toLowerCase(),
+      sexo: val('f_sexo'),
+      idade: val('f_idade') ? +val('f_idade') : '',
+      obs: val('f_obs'),
+      origem: p ? p.origem : 'manual',
+      criadoEm: p ? p.criadoEm : hoje()
+    };
+    if(p){
+      db.pacientes[db.pacientes.indexOf(p)] = reg;
+      // nome mudou: propaga para os lançamentos vinculados por id
+      if(p.nome !== reg.nome){
+        db.abordagens.concat(db.negociacoes).forEach(function(x){ if(x.pacienteId === p.id) x.paciente = reg.nome; });
+      }
+    } else {
+      db.pacientes.push(reg);
+    }
+    salvar(); render(); fecharModal();
+  }, p ? function(){
+    var h = historicoPaciente(p);
+    var n = h.abordagens.length + h.negociacoes.length;
+    if(!confirm('Excluir ' + p.nome + ' da base?' + (n ? '\n\nOs ' + n + ' lançamentos dessa pessoa continuam no sistema, apenas sem o vínculo.' : ''))) return;
+    db.pacientes.splice(db.pacientes.indexOf(p), 1);
+    db.abordagens.concat(db.negociacoes).forEach(function(x){ if(x.pacienteId === p.id) delete x.pacienteId; });
+    salvar(); render(); fecharModal();
+  } : null);
+}
+
+/* ---------- autocompletar nos formulários ---------- */
+function sugerirPaciente(input){
+  var caixa = document.getElementById('f_pacSug'), flag = document.getElementById('f_pacFlag');
+  var q = normTxt(input.value), qd = soDigitos(q);
+  document.getElementById('f_pacId').value = '';
+  if(flag){ flag.textContent = q ? 'Novo cadastro — será criado ao salvar' : ''; flag.className = 'pacflag novo'; }
+  if(q.length < 2){ caixa.innerHTML = ''; return; }
+  var achados = db.pacientes.filter(function(p){
+    return normTxt(p.nome).indexOf(q) >= 0 || (qd.length >= 4 && soDigitos(p.telefone).indexOf(qd) >= 0);
+  }).slice(0, 8);
+  // nome exato já cadastrado: assume o vínculo direto
+  var exato = achados.filter(function(p){ return normTxt(p.nome) === q; })[0];
+  if(exato) escolherPaciente(exato.id, true);
+  caixa.innerHTML = achados.map(function(p){
+    return '<button type="button" onclick="escolherPaciente(\'' + p.id + '\')">' + esc(p.nome)
+         + '<small>' + esc(p.telefone || 'sem telefone') + (p.email ? ' · ' + esc(p.email) : '') + '</small></button>';
+  }).join('');
+}
+function escolherPaciente(id, silencioso){
+  var p = acharPaciente(id); if(!p) return;
+  document.getElementById('f_pac').value = p.nome;
+  document.getElementById('f_pacId').value = p.id;
+  if(!silencioso) document.getElementById('f_pacSug').innerHTML = '';
+  var flag = document.getElementById('f_pacFlag');
+  if(flag){ flag.textContent = 'Paciente cadastrado' + (p.telefone ? ' · ' + p.telefone : ''); flag.className = 'pacflag ok'; }
+  // já está na base: por padrão é paciente antigo, mas o agente pode mudar
+  var tipo = document.getElementById('f_tipo');
+  if(tipo && !tipo.dataset.tocado) tipo.value = 'Antigo';
+}
+function campoPaciente(d){
+  var p = d.pacienteId ? acharPaciente(d.pacienteId) : null;
+  return '<div class="pacwrap"><label>Paciente</label>'
+       + '<input id="f_pac" value="' + esc(d.paciente) + '" placeholder="Nome ou telefone" autocomplete="off"'
+       + ' oninput="sugerirPaciente(this)" onblur="setTimeout(function(){var c=document.getElementById(\'f_pacSug\');if(c)c.innerHTML=\'\'},180)">'
+       + '<input type="hidden" id="f_pacId" value="' + esc(p ? p.id : '') + '">'
+       + '<div class="sug" id="f_pacSug"></div>'
+       + '<p class="pacflag ' + (p ? 'ok' : '') + '" id="f_pacFlag">' + (p ? 'Paciente cadastrado' + (p.telefone ? ' · ' + esc(p.telefone) : '') : '') + '</p></div>';
+}
+/* Ao salvar um lançamento: devolve o id do paciente, criando o cadastro se for nome novo. */
+function resolverPacienteDoForm(nome){
+  var id = val('f_pacId');
+  if(id && acharPaciente(id)) return id;
+  return garantirPaciente(nome, 'lançamento').id;
+}
+
+/* ---------- importação de CSV ---------- */
+function decodificarCSV(buf){
+  var bytes = new Uint8Array(buf);
+  try{ return new TextDecoder('utf-8', { fatal:true }).decode(bytes); }
+  catch(e){ return new TextDecoder('windows-1252').decode(bytes); }   // exportação do Windows/Excel
+}
+function parseCSV(texto){
+  texto = texto.replace(/^﻿/, '');
+  var primeira = texto.split(/\r?\n/)[0] || '';
+  var sep = (primeira.split(';').length >= primeira.split(',').length) ? ';' : ',';
+  var linhas = [], linha = [], campo = '', aspas = false;
+  for(var i = 0; i < texto.length; i++){
+    var c = texto[i];
+    if(aspas){
+      if(c === '"'){ if(texto[i+1] === '"'){ campo += '"'; i++; } else aspas = false; }
+      else campo += c;
+    } else if(c === '"'){ aspas = true; }
+    else if(c === sep){ linha.push(campo); campo = ''; }
+    else if(c === '\n' || c === '\r'){
+      if(c === '\r' && texto[i+1] === '\n') i++;
+      linha.push(campo); linhas.push(linha); linha = []; campo = '';
+    } else campo += c;
+  }
+  if(campo !== '' || linha.length){ linha.push(campo); linhas.push(linha); }
+  return linhas.filter(function(l){ return l.some(function(v){ return String(v).trim() !== ''; }); });
+}
+/* Reconhece as colunas pelo nome do cabeçalho, em qualquer ordem. */
+function mapearColunas(cab){
+  var idx = {};
+  cab.forEach(function(h, i){
+    var n = normTxt(h);
+    if(/^nome/.test(n) || n === 'paciente') idx.nome = idx.nome == null ? i : idx.nome;
+    else if(/^sexo|^genero/.test(n)) idx.sexo = i;
+    else if(/^idade/.test(n)) idx.idade = i;
+    else if(/nascimento/.test(n)) idx.nascimento = i;
+    else if(/telefone|celular|fone|whats/.test(n)) idx.telefone = idx.telefone == null ? i : idx.telefone;
+    else if(/mail/.test(n)) idx.email = i;
+    else if(/observ|obs/.test(n)) idx.obs = i;
+  });
+  return idx;
+}
+function idadeDe(v, nasc){
+  var ano = new Date().getFullYear();
+  if(nasc){
+    var m = String(nasc).match(/(\d{4})/) || String(nasc).match(/\/(\d{2})$/);
+    if(m){ var y = +m[1]; if(y < 100) y += 1900; if(y > 1900 && y <= ano) return ano - y; }
+  }
+  var n = parseInt(String(v || '').replace(/\D/g, ''), 10);
+  if(isNaN(n)) return '';
+  if(n > 120 && n > 1900 && n <= ano) return ano - n;   // veio o ano de nascimento no lugar da idade
+  return (n >= 0 && n <= 120) ? n : '';
+}
+function importarPacientes(input){
+  var f = input.files[0]; if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    input.value = '';
+    var linhas;
+    try{ linhas = parseCSV(decodificarCSV(r.result)); }catch(e){ alert('Não consegui ler o arquivo.'); return; }
+    if(linhas.length < 2){ alert('O arquivo não tem linhas de dados.'); return; }
+    var idx = mapearColunas(linhas[0]);
+    if(idx.nome == null){ alert('Não achei a coluna de nome no cabeçalho. Colunas lidas: ' + linhas[0].join(' | ')); return; }
+
+    var existentes = {};
+    db.pacientes.forEach(function(p){ existentes[chavePaciente(p)] = 1; });
+    var novos = [], jaExistiam = 0, semNome = 0, foneInvalido = 0, noArquivo = {};
+
+    linhas.slice(1).forEach(function(l){
+      var nome = String(l[idx.nome] || '').trim().replace(/\s+/g, ' ');
+      if(!nome){ semNome++; return; }
+      var ext = extrairFones(idx.telefone != null ? l[idx.telefone] : '');
+      var sexoRaw = normTxt(idx.sexo != null ? l[idx.sexo] : '');
+      var sexo = /^f/.test(sexoRaw) ? 'Feminino' : (/^m/.test(sexoRaw) ? 'Masculino' : '');
+      var obs = String(idx.obs != null ? l[idx.obs] : '').trim();
+      if(ext.invalido){ foneInvalido++; obs = (obs ? obs + ' · ' : '') + 'Telefone ilegível na importação: ' + ext.invalido; }
+      var p = {
+        id:uid(), nome:nome, sexo:sexo,
+        idade: idadeDe(idx.idade != null ? l[idx.idade] : '', idx.nascimento != null ? l[idx.nascimento] : ''),
+        telefone: ext.fones[0] || '', telefone2: ext.fones[1] || '',
+        email: String(idx.email != null ? l[idx.email] : '').trim().toLowerCase(),
+        obs: obs, origem:'importado', criadoEm:hoje()
+      };
+      var k = chavePaciente(p);
+      if(existentes[k] || noArquivo[k]){ jaExistiam++; return; }
+      noArquivo[k] = 1;
+      novos.push(p);
+    });
+
+    if(!novos.length && !jaExistiam){ alert('Nenhum paciente reconhecido no arquivo.'); return; }
+    var resumo = '<div class="impres">'
+      + '<div><span>Linhas no arquivo</span><b>' + (linhas.length - 1) + '</b></div>'
+      + '<div><span>Pacientes novos a importar</span><b>' + novos.length + '</b></div>'
+      + '<div><span>Já existiam na base (ignorados)</span><b>' + jaExistiam + '</b></div>'
+      + (foneInvalido ? '<div><span>Telefone ilegível — guardado nas observações</span><b>' + foneInvalido + '</b></div>' : '')
+      + (semNome ? '<div><span>Sem nome (descartados)</span><b>' + semNome + '</b></div>' : '')
+      + '</div><p class="hint">Colunas reconhecidas: ' + Object.keys(idx).join(', ') + '. Os dados ficam só neste navegador.</p>';
+    abrirModal('Importar pacientes', resumo, function(){
+      db.pacientes = db.pacientes.concat(novos);
+      salvar(); pLimite = 60; render(); fecharModal();
+    });
+    document.getElementById('mSalvar').textContent = 'Importar ' + novos.length;
+    document.getElementById('mSalvar').disabled = !novos.length;
+  };
+  r.readAsArrayBuffer(f);
+}
+
 /* ---------- formulário: abordagem ---------- */
 function abrirAbordagem(id){
   var a = id ? db.abordagens.filter(function(x){ return x.id === id; })[0] : null;
   var d = a || { data:hoje(), especialidade:'HOF', paciente:'', tipo:'Novo',
                  origem:db.origens[0]||'', agendou:'Não', dataConsulta:'', compareceu:'', atendente:db.atendentes[0]||'', obs:'' };
   var html = '<div class="fields two">'
-    + campo('Paciente', '<input id="f_pac" value="' + esc(d.paciente) + '" placeholder="Nome">')
+    + campoPaciente(d)
     + campo('Data do contato', '<input type="date" id="f_data" value="' + esc(d.data) + '">')
     + campo('Especialidade', '<select id="f_esp">' + opcoes(ESP, d.especialidade) + '</select>')
-    + campo('Tipo de paciente', '<select id="f_tipo">' + opcoes(['Novo','Antigo'], d.tipo) + '</select>')
+    + campo('Tipo de paciente', '<select id="f_tipo" onchange="this.dataset.tocado=1">' + opcoes(['Novo','Antigo'], d.tipo) + '</select>')
     + campo('Canal de origem', '<select id="f_org">' + opcoes(db.origens, d.origem) + '</select>')
     + campo('Atendente', '<select id="f_at">' + opcoes(db.atendentes, d.atendente) + '</select>')
     + campo('Agendou consulta?', '<select id="f_ag" onchange="toggleAgenda()">' + opcoes(['Não','Sim'], d.agendou) + '</select>')
@@ -1270,10 +1643,12 @@ function abrirAbordagem(id){
   abrirModal(a ? 'Editar abordagem' : 'Nova abordagem', html, function(){
     var pac = val('f_pac');
     if(!pac){ alert('Informe o nome do paciente.'); return; }
+    var pid = resolverPacienteDoForm(pac);
     var reg = {
       id: a ? a.id : uid(),
+      pacienteId: pid,
       data: val('f_data') || hoje(),
-      especialidade: val('f_esp'), paciente: pac, tipo: val('f_tipo'),
+      especialidade: val('f_esp'), paciente: acharPaciente(pid).nome, tipo: val('f_tipo'),
       origem: val('f_org'), agendou: val('f_ag'),
       dataConsulta: val('f_ag') === 'Sim' ? val('f_dc') : '',
       compareceu: val('f_ag') === 'Sim' ? val('f_cp') : '',
@@ -1307,7 +1682,7 @@ function abrirNegociacao(id){
     return { v:p.id, t:p.nome + ' · ' + p.tecnologia };
   });
   var html = '<div class="fields two">'
-    + campo('Paciente', '<input id="f_pac" value="' + esc(d.paciente) + '" placeholder="Nome">')
+    + campoPaciente(d)
     + campo('Data da oferta', '<input type="date" id="f_data" value="' + esc(d.data) + '">')
     + campo('Procedimento ofertado', '<select id="f_proc" onchange="autoPreco()">' + opcoes(procOpts, d.procedimentoId) + '</select>')
     + campo('Especialidade', '<select id="f_esp">' + opcoes(ESP, d.especialidade) + '</select>')
@@ -1324,10 +1699,12 @@ function abrirNegociacao(id){
     if(!pac){ alert('Informe o nome do paciente.'); return; }
     if(!val('f_proc')){ alert('Selecione o procedimento ofertado.'); return; }
     var st = val('f_st');
+    var pid = resolverPacienteDoForm(pac);
     var reg = {
       id: n ? n.id : uid(),
+      pacienteId: pid,
       data: val('f_data') || hoje(),
-      especialidade: val('f_esp'), paciente: pac,
+      especialidade: val('f_esp'), paciente: acharPaciente(pid).nome,
       procedimentoId: val('f_proc'),
       valorOfertado: +val('f_vo') || 0,
       status: st,
@@ -1664,7 +2041,8 @@ var REL_ABAS = [
   { id:'abordagens',nome:'Abordagens',    desc:'Lançamento a lançamento do funil de captação' },
   { id:'negociacoes',nome:'Negociações',  desc:'Cada oferta de procedimento e seu desfecho' },
   { id:'detalhe',   nome:'Detalhamento',  desc:'Faturamento por procedimento e tecnologia, mês a mês' },
-  { id:'canais',    nome:'Origem',        desc:'Abordagens por canal, mês a mês' }
+  { id:'canais',    nome:'Origem',        desc:'Abordagens por canal, mês a mês' },
+  { id:'pacientes', nome:'Pacientes',     desc:'Base de contatos completa — não depende do período' }
 ];
 
 function montarAba(id){
@@ -1785,6 +2163,22 @@ function montarAba(id){
         {t:'% do faturamento', tipo:'pct', w:17}
       ],
       linhas: linhas
+    };
+  }
+  if(id === 'pacientes'){
+    return {
+      nome:'Pacientes',
+      colunas:[
+        {t:'Nome', tipo:'texto', w:30}, {t:'Telefone', tipo:'texto', w:17}, {t:'Telefone 2', tipo:'texto', w:17},
+        {t:'E-mail', tipo:'texto', w:30}, {t:'Sexo', tipo:'texto', w:12}, {t:'Idade', tipo:'int', w:8},
+        {t:'Abordagens', tipo:'int', w:12}, {t:'Ofertas', tipo:'int', w:10},
+        {t:'Origem do cadastro', tipo:'texto', w:18}, {t:'Observações', tipo:'texto', w:34}
+      ],
+      linhas: db.pacientes.slice().sort(function(a, b){ return a.nome.localeCompare(b.nome, 'pt-BR'); }).map(function(p){
+        var h = historicoPaciente(p);
+        return [p.nome, p.telefone, p.telefone2, p.email, p.sexo, p.idade === '' ? null : p.idade,
+                h.abordagens.length, h.negociacoes.length, p.origem, p.obs];
+      })
     };
   }
   // canais
@@ -1918,7 +2312,7 @@ function importar(input){
   r.readAsText(f);
 }
 function limpar(){
-  if(!confirm('Apagar todos os lançamentos? O catálogo, as listas e os acessos são mantidos.')) return;
+  if(!confirm('Apagar todos os lançamentos? O catálogo, as listas, os acessos e a base de pacientes são mantidos.')) return;
   db.abordagens = []; db.negociacoes = [];
   salvar(); montarMeses(); render();
 }
@@ -1944,12 +2338,12 @@ function trocarView(v){
   });
   var fab = document.getElementById('fab');
   fab.classList.toggle('hidden', v === 'inicio' || v === 'ajustes' || v === 'relatorios');
-  fab.textContent = v === 'negociacoes' ? '+ Oferta' : '+ Abordagem';
+  fab.textContent = v === 'negociacoes' ? '+ Oferta' : (v === 'pacientes' ? '+ Paciente' : '+ Abordagem');
   window.scrollTo(0,0);
 }
 function fabAction(){
   var v = document.querySelector('#tabs button[aria-selected="true"]').dataset.v;
-  if(v === 'negociacoes') abrirNegociacao(); else abrirAbordagem();
+  if(v === 'negociacoes') abrirNegociacao(); else if(v === 'pacientes') abrirPaciente(); else abrirAbordagem();
 }
 document.getElementById('tabs').addEventListener('click', function(e){
   var b = e.target.closest('button'); if(b) trocarView(b.dataset.v);

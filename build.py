@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 """Monta deck.html embarcando fontes e logotipos do branding book do cliente."""
 import base64, io, re, os
-B=r"C:\Users\RCX\AppData\Local\Temp\claude\C--Users-RCX-Desktop-Projetos\0e9549bd-443a-4740-9376-c793c98ff232\scratchpad\brand"
+# Arquivos de marca ficam FORA do repositório (público). Se a pasta sumir,
+# reextrair os 3 zips (Logos, Fontes, Cores) que estão em Downloads.
+B=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_marca-hyllua")
+if not os.path.isdir(B):
+    raise SystemExit("Pasta de marca nao encontrada: " + os.path.abspath(B)
+                     + "\nReextraia os zips Logos/Fontes/Cores de Downloads para la.")
 F=os.path.join(B,"Fontes","Fontes")
 L=os.path.join(B,"Logos","Logos","Cl\u00ednica","SVG")
 
