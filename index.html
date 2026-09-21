@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
 <title>CRM Hyllua</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -204,6 +207,12 @@ td.num,th.num{text-align:right; font-variant-numeric:tabular-nums}
 .modal h3{font-family:var(--serif); font-weight:400; font-size:22px; margin:0 0 16px}
 .fields{display:grid; gap:12px; grid-template-columns:1fr}
 @media (min-width:560px){ .fields.two{grid-template-columns:1fr 1fr} }
+.proc-head,.proc-row{display:grid; grid-template-columns:1fr 110px 110px 22px; gap:8px; align-items:center}
+.proc-head{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--tinta-3); margin:6px 0 4px}
+.proc-head span:nth-child(n+2){text-align:right}
+.proc-row{margin-bottom:6px}
+.proc-row input{text-align:right}
+@media (max-width:559px){ .proc-head,.proc-row{grid-template-columns:1fr 84px 84px 22px} }
 label{display:block; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--tinta-3); margin-bottom:5px}
 input,select,textarea{
   width:100%; background:var(--surface); border:1px solid var(--line-2);
@@ -436,7 +445,7 @@ footer{padding:26px 0 40px; color:var(--tinta-3); font-size:11.5px}
   <!-- ================= NEGOCIAÇÕES ================= -->
   <section class="view" id="v-negociacoes">
     <h1>Negociações</h1>
-    <p class="sub">Toda oferta de procedimento — mesmo a que não fecha. Um paciente pode ter várias linhas.</p>
+    <p class="sub">Toda oferta de procedimento — mesmo a que não fecha. Uma oferta pode trazer vários procedimentos; cada um vira uma linha e fecha ou perde por conta própria.</p>
     <div class="bar-actions">
       <button class="btn" onclick="abrirNegociacao()">+ Nova oferta</button>
       <span class="grow" id="cntNeg"></span>
@@ -760,6 +769,7 @@ function semear(forcar){
       // quem compareceu recebe de 1 a 3 ofertas
       if(compareceu){
         var nOf = 1 + Math.floor(rnd() * 3);
+        var grupo = nOf > 1 ? uid() : '';
         for(var j = 0; j < nOf; j++){
           var cands = procs.filter(function(p){ return p.especialidade === esp; });
           var proc = cands[Math.floor(rnd() * cands.length)];
@@ -776,7 +786,8 @@ function semear(forcar){
             status: st,
             valorFechado: st === 'Fechado' ? Math.round(ofertado * (0.85 + rnd() * 0.15) / 50) * 50 : 0,
             motivoPerda: st === 'Perdido' ? pick(MOTIVOS) : '',
-            atendente: pick(db.atendentes)
+            atendente: pick(db.atendentes),
+            grupoId: grupo
           });
         }
       }
@@ -1220,6 +1231,13 @@ function nomeProc(id){
   var p = db.procedimentos.filter(function(x){ return x.id === id; })[0];
   return p ? p.nome : '—';
 }
+/* rótulo para linhas que nasceram numa mesma oferta */
+function grupoTag(n){
+  if(!n.grupoId) return '';
+  var irmaos = db.negociacoes.filter(function(x){ return x.grupoId === n.grupoId; });
+  if(irmaos.length < 2) return '';
+  return ' <span class="pill p-mut" title="Ofertado junto com outros ' + (irmaos.length - 1) + '">' + irmaos.length + ' proc.</span>';
+}
 function renderNegociacoes(){
   var lista = filtraEsp(db.negociacoes).filter(function(n){ return mesDe(n.data) === filtroMes; })
                 .sort(function(a,b){ return b.data.localeCompare(a.data); });
@@ -1237,7 +1255,7 @@ function renderNegociacoes(){
     var extra = n.status === 'Perdido' && n.motivoPerda
       ? esc(n.motivoPerda) + ' · ' + esc(n.atendente) : esc(n.atendente);
     return '<tr><td>' + dataBR(n.data) + '</td><td>' + esc(n.paciente) + '</td>'
-         + '<td>' + esc(nomeProc(n.procedimentoId)) + '</td>'
+         + '<td>' + esc(nomeProc(n.procedimentoId)) + grupoTag(n) + '</td>'
          + '<td>' + pillEsp(n.especialidade) + '</td>'
          + '<td class="num">' + brl(n.valorOfertado) + '</td>'
          + '<td><span class="pill ' + cls + '">' + esc(n.status) + '</span>' + parada + '</td>'
@@ -1701,66 +1719,138 @@ function toggleAgenda(){
 }
 
 /* ---------- formulário: negociação ---------- */
+/* Uma oferta pode trazer vários procedimentos. Cada um vira uma linha própria em
+   db.negociacoes (porque fecha ou perde de forma independente) e todas dividem o
+   mesmo grupoId, que marca que nasceram juntas. */
+var procsForm = [];   // linhas de procedimento do formulário aberto
+function linhaProcForm(i){
+  var it = procsForm[i];
+  var procOpts = [{v:'',t:'Selecione…'}].concat(db.procedimentos.map(function(p){
+    return { v:p.id, t:p.nome + ' · ' + p.tecnologia };
+  }));
+  return '<div class="proc-row" id="pr_' + i + '">'
+    + '<select id="f_proc_' + i + '" onchange="autoPreco(' + i + ')" aria-label="Procedimento">' + opcoes(procOpts, it.procedimentoId) + '</select>'
+    + '<input type="number" id="f_vo_' + i + '" min="0" step="50" placeholder="Ofertado" aria-label="Valor ofertado" value="' + esc(it.valorOfertado) + '">'
+    + '<input type="number" id="f_vf_' + i + '" min="0" step="50" placeholder="Fechado" aria-label="Valor fechado" value="' + esc(it.valorFechado) + '">'
+    + (procsForm.length > 1 && !it.id
+        ? '<button type="button" class="linkish" style="text-decoration:none" onclick="remProcForm(' + i + ')" aria-label="Remover">×</button>'
+        : '<span></span>')
+    + '</div>';
+}
+function lerProcsForm(){
+  procsForm.forEach(function(it, i){
+    it.procedimentoId = val('f_proc_' + i);
+    it.valorOfertado = val('f_vo_' + i);
+    it.valorFechado = val('f_vf_' + i);
+  });
+}
+function renderProcsForm(){
+  var box = document.getElementById('f_procs');
+  if(!box) return;
+  box.innerHTML = procsForm.map(function(_, i){ return linhaProcForm(i); }).join('');
+  toggleStatus();
+}
+function addProcForm(){
+  lerProcsForm();
+  procsForm.push({ procedimentoId:'', valorOfertado:'', valorFechado:'' });
+  renderProcsForm();
+  var sel = document.getElementById('f_proc_' + (procsForm.length - 1));
+  if(sel) sel.focus();
+}
+function remProcForm(i){
+  lerProcsForm();
+  procsForm.splice(i, 1);
+  renderProcsForm();
+}
 function abrirNegociacao(id){
   var n = id ? db.negociacoes.filter(function(x){ return x.id === id; })[0] : null;
-  var d = n || { data:hoje(), especialidade:'HOF', paciente:'', procedimentoId:'',
-                 valorOfertado:'', status:'Em negociação', valorFechado:'', motivoPerda:'', atendente:db.atendentes[0]||'' };
-  var procOpts = db.procedimentos.map(function(p){
-    return { v:p.id, t:p.nome + ' · ' + p.tecnologia };
-  });
+  var d = n || { data:hoje(), especialidade:'HOF', paciente:'',
+                 status:'Em negociação', motivoPerda:'', atendente:db.atendentes[0]||'' };
+  procsForm = [ n
+    ? { id:n.id, procedimentoId:n.procedimentoId, valorOfertado:n.valorOfertado, valorFechado:n.valorFechado || '' }
+    : { procedimentoId:'', valorOfertado:'', valorFechado:'' } ];
+  var irmaos = n && n.grupoId ? db.negociacoes.filter(function(x){ return x.grupoId === n.grupoId && x.id !== n.id; }) : [];
+
   var html = '<div class="fields two">'
     + campoPaciente(d)
     + campo('Data da oferta', '<input type="date" id="f_data" value="' + esc(d.data) + '">')
-    + campo('Procedimento ofertado', '<select id="f_proc" onchange="autoPreco()">' + opcoes(procOpts, d.procedimentoId) + '</select>')
     + campo('Especialidade', '<select id="f_esp">' + opcoes(ESP, d.especialidade) + '</select>')
-    + campo('Valor ofertado (R$)', '<input type="number" id="f_vo" min="0" step="50" value="' + esc(d.valorOfertado) + '">')
     + campo('Atendente', '<select id="f_at">' + opcoes(db.atendentes, d.atendente) + '</select>')
+    + '</div>'
+    + '<div style="margin-top:12px"><label>Procedimentos ofertados</label>'
+    + '<div class="proc-head"><span>Procedimento</span><span>Ofertado (R$)</span><span>Fechado (R$)</span><span></span></div>'
+    + '<div id="f_procs"></div>'
+    + '<button type="button" class="btn ghost sm" style="margin-top:8px" onclick="addProcForm()">+ Adicionar procedimento</button>'
+    + (n ? '<p class="hint">Cada procedimento é uma linha própria na lista'
+             + (irmaos.length ? '; esta oferta tem mais ' + irmaos.length + ' (' + irmaos.map(function(x){ return esc(nomeProc(x.procedimentoId)); }).join(', ') + '), editáveis separadamente' : '')
+             + '. Procedimentos adicionados aqui entram na mesma oferta.</p>'
+         : '<p class="hint">Cada procedimento vira uma linha na lista e pode fechar ou perder separadamente.</p>')
+    + '</div>'
+    + '<div class="fields two" style="margin-top:12px">'
     + campo('Status', '<select id="f_st" onchange="toggleStatus()">' + opcoes(STATUS, d.status) + '</select>',
             '“Em negociação” fica fora do cálculo da conversão.')
-    + campo('Valor fechado (R$)', '<input type="number" id="f_vf" min="0" step="50" value="' + esc(d.valorFechado) + '">')
     + campo('Motivo da perda', '<select id="f_mp">' + opcoes([{v:'',t:'—'}].concat(MOTIVOS), d.motivoPerda) + '</select>')
     + '</div>';
 
   abrirModal(n ? 'Editar oferta' : 'Nova oferta de procedimento', html, function(){
     var pac = val('f_pac');
     if(!pac){ alert('Informe o nome do paciente.'); return; }
-    if(!val('f_proc')){ alert('Selecione o procedimento ofertado.'); return; }
+    lerProcsForm();
+    var itens = procsForm.filter(function(it){ return it.procedimentoId; });
+    if(!itens.length){ alert('Selecione ao menos um procedimento ofertado.'); return; }
+    var vistos = {};
+    for(var k = 0; k < itens.length; k++){
+      if(vistos[itens[k].procedimentoId]){ alert('O mesmo procedimento aparece mais de uma vez.'); return; }
+      vistos[itens[k].procedimentoId] = 1;
+    }
     var st = val('f_st');
     var pid = resolverPacienteDoForm(pac);
-    var reg = {
-      id: n ? n.id : uid(),
+    var grupo = (n && n.grupoId) || (itens.length > 1 ? uid() : '');
+    var comum = {
       pacienteId: pid,
       data: val('f_data') || hoje(),
       especialidade: val('f_esp'), paciente: acharPaciente(pid).nome,
-      procedimentoId: val('f_proc'),
-      valorOfertado: +val('f_vo') || 0,
       status: st,
-      valorFechado: st === 'Fechado' ? (+val('f_vf') || +val('f_vo') || 0) : 0,
       motivoPerda: st === 'Perdido' ? val('f_mp') : '',
       atendente: val('f_at')
     };
-    if(n){ db.negociacoes[db.negociacoes.indexOf(n)] = reg; } else { db.negociacoes.push(reg); }
-    salvar(); irParaMes(mesDe(reg.data)); fecharModal();
+    itens.forEach(function(it){
+      var reg = {
+        id: it.id || uid(),
+        procedimentoId: it.procedimentoId,
+        valorOfertado: +it.valorOfertado || 0,
+        valorFechado: st === 'Fechado' ? (+it.valorFechado || +it.valorOfertado || 0) : 0
+      };
+      for(var c in comum){ reg[c] = comum[c]; }
+      if(grupo) reg.grupoId = grupo;
+      var antigo = it.id ? db.negociacoes.filter(function(x){ return x.id === it.id; })[0] : null;
+      if(antigo){ db.negociacoes[db.negociacoes.indexOf(antigo)] = reg; } else { db.negociacoes.push(reg); }
+    });
+    salvar(); irParaMes(mesDe(comum.data)); fecharModal();
   }, n ? function(){
     if(!confirm('Excluir esta oferta?')) return;
     db.negociacoes.splice(db.negociacoes.indexOf(n), 1);
     salvar(); montarMeses(); render(); fecharModal();
   } : null);
-  toggleStatus();
+  renderProcsForm();
 }
-function autoPreco(){
-  var sel = document.getElementById('f_proc'), vo = document.getElementById('f_vo'), esp = document.getElementById('f_esp');
+function autoPreco(i){
+  var sel = document.getElementById('f_proc_' + i), vo = document.getElementById('f_vo_' + i), esp = document.getElementById('f_esp');
   if(!sel || !vo) return;
   var p = db.procedimentos.filter(function(x){ return x.id === sel.value; })[0];
   if(!p) return;
   if(!vo.value) vo.value = p.valor;
-  if(esp) esp.value = p.especialidade;
+  if(esp && i === 0) esp.value = p.especialidade;
 }
 function toggleStatus(){
   var st = document.getElementById('f_st');
   if(!st) return;
-  var vf = document.getElementById('f_vf'), mp = document.getElementById('f_mp');
-  if(vf){ var on = st.value === 'Fechado'; vf.disabled = !on; vf.parentNode.style.opacity = on ? '1' : '.45'; }
+  var on = st.value === 'Fechado';
+  procsForm.forEach(function(_, i){
+    var vf = document.getElementById('f_vf_' + i);
+    if(vf){ vf.disabled = !on; vf.style.opacity = on ? '1' : '.45'; }
+  });
+  var mp = document.getElementById('f_mp');
   if(mp){ var on2 = st.value === 'Perdido'; mp.disabled = !on2; mp.parentNode.style.opacity = on2 ? '1' : '.45'; }
 }
 
